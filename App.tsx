@@ -49,20 +49,19 @@ const App: React.FC = () => {
     }
   }, [state, states]);
 
-  // Handle auto progress for chapters and end state
+  // Handle auto progress for end state only (chapters are now manual)
   useEffect(() => {
     if (autoProgressRef.current) clearTimeout(autoProgressRef.current);
-    
-    if (state.startsWith('CHAPTER_')) {
-      autoProgressRef.current = setTimeout(advance, TIMINGS.AUTO_PROGRESS);
-    } else if (state === ExperienceState.END_STATE) {
+
+    // Only auto-progress from END_STATE back to IDLE_LOOP
+    if (state === ExperienceState.END_STATE) {
       autoProgressRef.current = setTimeout(() => setState(ExperienceState.IDLE_LOOP), TIMINGS.END_RESET_TIMEOUT);
     }
 
     return () => {
       if (autoProgressRef.current) clearTimeout(autoProgressRef.current);
     };
-  }, [state, advance]);
+  }, [state]);
 
   // Global listeners for idle timer
   useEffect(() => {
