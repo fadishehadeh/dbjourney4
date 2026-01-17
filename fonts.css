@@ -1,0 +1,36 @@
+@font-face {
+  font-family: 'Diodrum Arabic';
+  src: url('/fonts/DiodrumArabic-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Diodrum Arabic';
+  src: url('/fonts/DiodrumArabic-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Diodrum Arabic';
+  src: url('/fonts/Indian Type Foundry - Diodrum Arabic Semibold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Diodrum Arabic';
+  src: url('/fonts/DiodrumArabic-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+* {
+  font-family: 'Diodrum Arabic', system-ui, -apple-system, sans-serif;
+}
+
