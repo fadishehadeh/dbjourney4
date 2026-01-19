@@ -1,9 +1,9 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence, PanInfo } from 'framer-motion';
-import { Orbit, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Orbit, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { ExperienceState } from './types';
-import { TIMINGS, CHAPTERS, COLORS } from './constants';
+import { TIMINGS, CHAPTERS, COLORS, CARDS } from './constants';
 import AssetPreloader from './components/AssetPreloader';
 import MotionOverlay from './components/MotionOverlay';
 
@@ -16,6 +16,7 @@ const App: React.FC = () => {
   const states = [
     ExperienceState.IDLE_LOOP,
     ExperienceState.START_SCREEN,
+    ExperienceState.CARD_SELECTION,
     ExperienceState.CHAPTER_1,
     ExperienceState.CHAPTER_2,
     ExperienceState.CHAPTER_3,
@@ -184,6 +185,275 @@ const App: React.FC = () => {
             </motion.div>
           )}
 
+          {state === ExperienceState.CARD_SELECTION && (
+            <motion.div
+              key="card-selection"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: TIMINGS.TRANSITION_DURATION / 1000 }}
+              className="absolute inset-0 bg-[#002D74] overflow-hidden"
+            >
+              <MotionOverlay type="grid" />
+
+              {/* Home Button - Top Left */}
+              <motion.button
+                initial={{ opacity: 0, x: -50 }}
+                animate={{
+                  opacity: 1,
+                  x: 0,
+                  boxShadow: [
+                    "0 0 20px rgba(255, 255, 255, 0.1)",
+                    "0 0 30px rgba(255, 255, 255, 0.2)",
+                    "0 0 20px rgba(255, 255, 255, 0.1)"
+                  ]
+                }}
+                transition={{
+                  delay: 0.8,
+                  type: "spring",
+                  stiffness: 100,
+                  boxShadow: { duration: 3, repeat: Infinity }
+                }}
+                whileHover={{ scale: 1.1, x: -5 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setState(ExperienceState.START_SCREEN)}
+                className="absolute top-16 left-16 z-50 px-12 py-6 bg-white/10 backdrop-blur-xl rounded-full border border-white/20 text-white text-3xl font-bold hover:bg-white/20 transition-colors shadow-2xl"
+              >
+                ← Home
+              </motion.button>
+
+              {/* Continue Button - Top Right */}
+              <motion.button
+                initial={{ opacity: 0, x: 50 }}
+                animate={{
+                  opacity: 1,
+                  x: 0,
+                  boxShadow: [
+                    "0 0 20px rgba(61, 174, 43, 0.3)",
+                    "0 0 40px rgba(61, 174, 43, 0.5)",
+                    "0 0 20px rgba(61, 174, 43, 0.3)"
+                  ]
+                }}
+                transition={{
+                  delay: 0.8,
+                  type: "spring",
+                  stiffness: 100,
+                  boxShadow: { duration: 2, repeat: Infinity }
+                }}
+                whileHover={{
+                  scale: 1.1,
+                  x: 5,
+                  boxShadow: "0 0 50px rgba(61, 174, 43, 0.6)"
+                }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setState(ExperienceState.CHAPTER_1)}
+                className="absolute top-16 right-16 z-50 px-12 py-6 bg-[#3DAE2B] backdrop-blur-xl rounded-full border border-[#3DAE2B] text-white text-3xl font-bold hover:bg-[#35991f] transition-colors shadow-2xl"
+              >
+                Continue →
+              </motion.button>
+
+              <div className="relative h-full w-full flex flex-col items-center justify-center p-16 pt-32">
+                <motion.h2
+                  initial={{ y: -30, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                  className="text-white text-7xl font-bold mb-20 text-center"
+                >
+                  Explore Our Services
+                </motion.h2>
+
+                <div className="grid grid-cols-2 gap-8 max-w-5xl">
+                  {CARDS.map((card, idx) => (
+                    <motion.div
+                      key={card.id}
+                      initial={{ opacity: 0, scale: 0.8, y: 50 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      transition={{ delay: 0.5 + idx * 0.1, type: "spring", stiffness: 100 }}
+                      whileHover={{ scale: 1.05, y: -10 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setState(card.detailState)}
+                      className="bg-white/10 backdrop-blur-xl rounded-3xl p-12 border border-white/20 cursor-pointer shadow-2xl hover:bg-white/15 transition-colors"
+                    >
+                      <motion.div
+                        animate={{ rotate: [0, 5, 0, -5, 0] }}
+                        transition={{ duration: 4, repeat: Infinity, delay: idx * 0.2 }}
+                        className="text-[#3DAE2B] mb-8 flex justify-center"
+                      >
+                        {React.cloneElement(card.icon as React.ReactElement, { size: 80, strokeWidth: 1.5 })}
+                      </motion.div>
+                      <h3 className="text-white text-4xl font-bold text-center">
+                        {card.title}
+                      </h3>
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Bottom hint text */}
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 0.4 }}
+                  transition={{ delay: 1.5 }}
+                  className="text-white/40 text-2xl mt-16 text-center"
+                >
+                  Select a service to learn more, or continue to explore
+                </motion.p>
+              </div>
+            </motion.div>
+          )}
+
+          {state === ExperienceState.CARD_DETAIL_1 && (
+            <motion.div
+              key="vcp-video"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: TIMINGS.TRANSITION_DURATION / 1000 }}
+              className="absolute inset-0 bg-black/95 overflow-hidden flex items-center justify-center"
+            >
+              {/* Close Button */}
+              <motion.button
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3 }}
+                whileHover={{ scale: 1.1, rotate: 90 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setState(ExperienceState.CARD_SELECTION)}
+                className="absolute top-16 right-16 z-50 p-6 bg-white/10 backdrop-blur-xl rounded-full border border-white/20 text-white hover:bg-white/20 transition-colors"
+              >
+                <X size={48} />
+              </motion.button>
+
+              {/* Video Player */}
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.2, type: "spring", stiffness: 100 }}
+                className="relative w-full h-full max-w-7xl max-h-[90vh] flex items-center justify-center p-16"
+              >
+                <video
+                  controls
+                  autoPlay
+                  className="w-full h-full object-contain rounded-2xl shadow-2xl"
+                  src="/videos/vcp.mp4"
+                >
+                  Your browser does not support the video tag.
+                </video>
+              </motion.div>
+            </motion.div>
+          )}
+
+          {[
+            ExperienceState.CARD_DETAIL_2,
+            ExperienceState.CARD_DETAIL_3,
+            ExperienceState.CARD_DETAIL_4,
+            ExperienceState.CARD_DETAIL_5,
+            ExperienceState.CARD_DETAIL_6
+          ].includes(state) && (
+            <motion.div
+              key="card-detail"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: TIMINGS.TRANSITION_DURATION / 1000 }}
+              className="absolute inset-0 bg-[#002D74] overflow-hidden"
+            >
+              <MotionOverlay type="waves" />
+
+              {/* Home Button - Top Left */}
+              <motion.button
+                initial={{ opacity: 0, x: -50 }}
+                animate={{
+                  opacity: 1,
+                  x: 0,
+                  boxShadow: [
+                    "0 0 20px rgba(255, 255, 255, 0.1)",
+                    "0 0 30px rgba(255, 255, 255, 0.2)",
+                    "0 0 20px rgba(255, 255, 255, 0.1)"
+                  ]
+                }}
+                transition={{
+                  delay: 0.8,
+                  type: "spring",
+                  stiffness: 100,
+                  boxShadow: { duration: 3, repeat: Infinity }
+                }}
+                whileHover={{ scale: 1.1, x: -5 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setState(ExperienceState.START_SCREEN)}
+                className="absolute top-16 left-16 z-50 px-12 py-6 bg-white/10 backdrop-blur-xl rounded-full border border-white/20 text-white text-3xl font-bold hover:bg-white/20 transition-colors shadow-2xl"
+              >
+                ← Home
+              </motion.button>
+
+              {/* Close Button */}
+              <motion.button
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.5 }}
+                whileHover={{ scale: 1.1, rotate: 90 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setState(ExperienceState.CARD_SELECTION)}
+                className="absolute top-16 right-16 z-50 p-6 bg-white/10 backdrop-blur-xl rounded-full border border-white/20 text-white hover:bg-white/20 transition-colors"
+              >
+                <X size={48} />
+              </motion.button>
+
+              <div className="relative h-full w-full flex flex-col items-center justify-center p-24 text-center">
+                <motion.div
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ delay: 0.3, type: "spring", stiffness: 100 }}
+                  className="text-[#3DAE2B] mb-12"
+                >
+                  {React.cloneElement(
+                    CARDS.find(c => c.detailState === state)?.icon as React.ReactElement,
+                    { size: 120, strokeWidth: 1.5 }
+                  )}
+                </motion.div>
+
+                <motion.h2
+                  initial={{ y: 30, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                  className="text-white text-8xl font-bold mb-12"
+                >
+                  {CARDS.find(c => c.detailState === state)?.title}
+                </motion.h2>
+
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: "200px" }}
+                  transition={{ delay: 0.7, duration: 1 }}
+                  className="h-1 bg-gradient-to-r from-[#3DAE2B] to-transparent mb-16"
+                />
+
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.9 }}
+                  className="text-white/80 text-4xl max-w-4xl leading-relaxed"
+                >
+                  This is a detailed view for {CARDS.find(c => c.detailState === state)?.title}.
+                  <br /><br />
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                  Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                </motion.p>
+
+                <motion.button
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1.2 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setState(ExperienceState.CARD_SELECTION)}
+                  className="mt-16 px-20 py-8 bg-[#3DAE2B] text-white text-4xl font-bold rounded-full shadow-2xl hover:bg-[#35991f] transition-colors"
+                >
+                  Back to Services
+                </motion.button>
+              </div>
+            </motion.div>
+          )}
+
           {currentChapter && (
             <motion.div
               key={state}
@@ -208,6 +478,62 @@ const App: React.FC = () => {
               <div className="absolute inset-0 bg-gradient-to-b from-[#002D74]/95 via-[#002D74]/50 to-[#002D74]/95" />
               
               <MotionOverlay type={currentChapter.overlayType} />
+
+              {/* Home Button - Top Left */}
+              <motion.button
+                initial={{ opacity: 0, x: -50 }}
+                animate={{
+                  opacity: 1,
+                  x: 0,
+                  boxShadow: [
+                    "0 0 20px rgba(255, 255, 255, 0.1)",
+                    "0 0 30px rgba(255, 255, 255, 0.2)",
+                    "0 0 20px rgba(255, 255, 255, 0.1)"
+                  ]
+                }}
+                transition={{
+                  delay: 0.8,
+                  type: "spring",
+                  stiffness: 100,
+                  boxShadow: { duration: 3, repeat: Infinity }
+                }}
+                whileHover={{ scale: 1.1, x: -5 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setState(ExperienceState.START_SCREEN)}
+                className="absolute top-16 left-16 z-50 px-12 py-6 bg-white/10 backdrop-blur-xl rounded-full border border-white/20 text-white text-3xl font-bold hover:bg-white/20 transition-colors shadow-2xl"
+              >
+                ← Home
+              </motion.button>
+
+              {/* Continue Button - Top Right */}
+              <motion.button
+                initial={{ opacity: 0, x: 50 }}
+                animate={{
+                  opacity: 1,
+                  x: 0,
+                  boxShadow: [
+                    "0 0 20px rgba(61, 174, 43, 0.3)",
+                    "0 0 40px rgba(61, 174, 43, 0.5)",
+                    "0 0 20px rgba(61, 174, 43, 0.3)"
+                  ]
+                }}
+                transition={{
+                  delay: 0.8,
+                  type: "spring",
+                  stiffness: 100,
+                  boxShadow: { duration: 2, repeat: Infinity }
+                }}
+                whileHover={{
+                  scale: 1.1,
+                  x: 5,
+                  boxShadow: "0 0 50px rgba(61, 174, 43, 0.6)"
+                }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => advance()}
+                className="absolute top-16 right-16 z-50 px-12 py-6 bg-[#3DAE2B] backdrop-blur-xl rounded-full border border-[#3DAE2B] text-white text-3xl font-bold hover:bg-[#35991f] transition-colors shadow-2xl"
+              >
+                Continue →
+              </motion.button>
 
               {/* Content Overlay - High Contrast Typography */}
               <div className="relative h-full w-full flex flex-col justify-center pt-48 pb-80 px-24 text-left">
@@ -292,9 +618,64 @@ const App: React.FC = () => {
               exit={{ opacity: 0 }}
               transition={{ duration: TIMINGS.TRANSITION_DURATION / 1000 }}
               className="absolute inset-0 flex flex-col items-center justify-center bg-[#002D74] text-center px-12"
-              onPointerUp={() => setState(ExperienceState.IDLE_LOOP)}
             >
               <MotionOverlay type="horizon" />
+
+              {/* Home Button - Top Left */}
+              <motion.button
+                initial={{ opacity: 0, x: -50 }}
+                animate={{
+                  opacity: 1,
+                  x: 0,
+                  boxShadow: [
+                    "0 0 20px rgba(255, 255, 255, 0.1)",
+                    "0 0 30px rgba(255, 255, 255, 0.2)",
+                    "0 0 20px rgba(255, 255, 255, 0.1)"
+                  ]
+                }}
+                transition={{
+                  delay: 0.8,
+                  type: "spring",
+                  stiffness: 100,
+                  boxShadow: { duration: 3, repeat: Infinity }
+                }}
+                whileHover={{ scale: 1.1, x: -5 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setState(ExperienceState.START_SCREEN)}
+                className="absolute top-16 left-16 z-50 px-12 py-6 bg-white/10 backdrop-blur-xl rounded-full border border-white/20 text-white text-3xl font-bold hover:bg-white/20 transition-colors shadow-2xl"
+              >
+                ← Home
+              </motion.button>
+
+              {/* Restart Button - Top Right */}
+              <motion.button
+                initial={{ opacity: 0, x: 50 }}
+                animate={{
+                  opacity: 1,
+                  x: 0,
+                  boxShadow: [
+                    "0 0 20px rgba(61, 174, 43, 0.3)",
+                    "0 0 40px rgba(61, 174, 43, 0.5)",
+                    "0 0 20px rgba(61, 174, 43, 0.3)"
+                  ]
+                }}
+                transition={{
+                  delay: 0.8,
+                  type: "spring",
+                  stiffness: 100,
+                  boxShadow: { duration: 2, repeat: Infinity }
+                }}
+                whileHover={{
+                  scale: 1.1,
+                  x: 5,
+                  boxShadow: "0 0 50px rgba(61, 174, 43, 0.6)"
+                }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setState(ExperienceState.IDLE_LOOP)}
+                className="absolute top-16 right-16 z-50 px-12 py-6 bg-[#3DAE2B] backdrop-blur-xl rounded-full border border-[#3DAE2B] text-white text-3xl font-bold hover:bg-[#35991f] transition-colors shadow-2xl"
+              >
+                Restart ↻
+              </motion.button>
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}

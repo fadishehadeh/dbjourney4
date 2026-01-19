@@ -1,11 +1,12 @@
 
 import React from 'react';
-import { ExperienceState, ChapterData } from './types';
-import { 
-  Zap, TrendingUp, ShieldCheck, 
+import { ExperienceState, ChapterData, CardData } from './types';
+import {
+  Zap, TrendingUp, ShieldCheck,
   Smartphone, CreditCard, Headphones, CreditCard as CardIcon,
-  User, Building2, Briefcase, Gem, 
-  Sparkles, Leaf, Orbit
+  User, Building2, Briefcase, Gem,
+  Sparkles, Leaf, Orbit,
+  Wallet, Globe, Lock, TrendingUp as Chart, Users, Award
 } from 'lucide-react';
 
 export const COLORS = {
@@ -20,6 +21,45 @@ export const TIMINGS = {
   AUTO_PROGRESS: 12000, // 12s
   END_RESET_TIMEOUT: 8000, // 8s
 };
+
+export const CARDS: CardData[] = [
+  {
+    id: 1,
+    title: 'VCP',
+    icon: <Wallet key="wallet" />,
+    detailState: ExperienceState.CARD_DETAIL_1
+  },
+  {
+    id: 2,
+    title: 'Global Payments',
+    icon: <Globe key="globe" />,
+    detailState: ExperienceState.CARD_DETAIL_2
+  },
+  {
+    id: 3,
+    title: 'Security & Privacy',
+    icon: <Lock key="lock" />,
+    detailState: ExperienceState.CARD_DETAIL_3
+  },
+  {
+    id: 4,
+    title: 'Investment Portfolio',
+    icon: <Chart key="chart" />,
+    detailState: ExperienceState.CARD_DETAIL_4
+  },
+  {
+    id: 5,
+    title: 'Customer Support',
+    icon: <Users key="users" />,
+    detailState: ExperienceState.CARD_DETAIL_5
+  },
+  {
+    id: 6,
+    title: 'Premium Benefits',
+    icon: <Award key="award" />,
+    detailState: ExperienceState.CARD_DETAIL_6
+  }
+];
 
 export const CHAPTERS: ChapterData[] = [
   {
