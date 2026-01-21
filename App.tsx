@@ -1,11 +1,14 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence, PanInfo } from 'framer-motion';
-import { Orbit, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Orbit, ChevronLeft, ChevronRight, Building2, Users as UsersIcon } from 'lucide-react';
 import { ExperienceState } from './types';
-import { TIMINGS, CHAPTERS, COLORS, CARDS } from './constants';
+import { TIMINGS, CHAPTERS, COLORS, RETAIL_CARDS, CORPORATE_CARDS } from './constants';
 import AssetPreloader from './components/AssetPreloader';
 import MotionOverlay from './components/MotionOverlay';
+import CardGrid from './components/CardGrid';
+import VideoDetailPage from './components/VideoDetailPage';
+import GamePage from './components/GamePage';
 
 const App: React.FC = () => {
   const [state, setState] = useState<ExperienceState>(ExperienceState.IDLE_LOOP);
@@ -16,7 +19,7 @@ const App: React.FC = () => {
   const states = [
     ExperienceState.IDLE_LOOP,
     ExperienceState.START_SCREEN,
-    ExperienceState.CARD_SELECTION,
+    ExperienceState.SECTION_SELECTION,
     ExperienceState.CHAPTER_1,
     ExperienceState.CHAPTER_2,
     ExperienceState.CHAPTER_3,
@@ -185,9 +188,9 @@ const App: React.FC = () => {
             </motion.div>
           )}
 
-          {state === ExperienceState.CARD_SELECTION && (
+          {state === ExperienceState.SECTION_SELECTION && (
             <motion.div
-              key="card-selection"
+              key="section-selection"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -252,114 +255,88 @@ const App: React.FC = () => {
                 Continue →
               </motion.button>
 
-              <div className="relative h-full w-full flex flex-col items-center justify-center p-16 pt-32">
+              <div className="relative h-full w-full flex flex-col items-center justify-center p-16 gap-16">
                 <motion.h2
                   initial={{ y: -30, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.3 }}
-                  className="text-white text-7xl font-bold mb-20 text-center"
+                  className="text-white text-8xl font-bold text-center"
                 >
-                  Explore Our Services
+                  Choose Your Journey
                 </motion.h2>
 
-                <div className="grid grid-cols-2 gap-8 max-w-5xl">
-                  {CARDS.map((card, idx) => (
+                <div className="flex gap-16 items-center justify-center">
+                  {/* Retail Button */}
+                  <motion.div
+                    initial={{ opacity: 0, x: -100, scale: 0.8 }}
+                    animate={{ opacity: 1, x: 0, scale: 1 }}
+                    transition={{ delay: 0.5, type: "spring", stiffness: 100 }}
+                    whileHover={{ scale: 1.05, y: -10 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setState(ExperienceState.RETAIL_CARDS)}
+                    className="bg-gradient-to-br from-[#3DAE2B] to-[#2d8a1f] backdrop-blur-xl rounded-3xl p-20 border-4 border-white/30 cursor-pointer shadow-2xl hover:shadow-[0_0_60px_rgba(61,174,43,0.6)] transition-all"
+                  >
                     <motion.div
-                      key={card.id}
-                      initial={{ opacity: 0, scale: 0.8, y: 50 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      transition={{ delay: 0.5 + idx * 0.1, type: "spring", stiffness: 100 }}
-                      whileHover={{ scale: 1.05, y: -10 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => setState(card.detailState)}
-                      className="bg-white/10 backdrop-blur-xl rounded-3xl p-12 border border-white/20 cursor-pointer shadow-2xl hover:bg-white/15 transition-colors"
+                      animate={{ rotate: [0, 5, 0, -5, 0], y: [0, -10, 0] }}
+                      transition={{ duration: 4, repeat: Infinity }}
+                      className="text-white mb-10 flex justify-center"
                     >
-                      <motion.div
-                        animate={{ rotate: [0, 5, 0, -5, 0] }}
-                        transition={{ duration: 4, repeat: Infinity, delay: idx * 0.2 }}
-                        className="text-[#3DAE2B] mb-8 flex justify-center"
-                      >
-                        {React.cloneElement(card.icon as React.ReactElement, { size: 80, strokeWidth: 1.5 })}
-                      </motion.div>
-                      <h3 className="text-white text-4xl font-bold text-center">
-                        {card.title}
-                      </h3>
+                      <UsersIcon size={120} strokeWidth={1.5} />
                     </motion.div>
-                  ))}
+                    <h3 className="text-white text-7xl font-bold text-center">
+                      Retail
+                    </h3>
+                  </motion.div>
+
+                  {/* Corporate Button */}
+                  <motion.div
+                    initial={{ opacity: 0, x: 100, scale: 0.8 }}
+                    animate={{ opacity: 1, x: 0, scale: 1 }}
+                    transition={{ delay: 0.5, type: "spring", stiffness: 100 }}
+                    whileHover={{ scale: 1.05, y: -10 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setState(ExperienceState.CORPORATE_CARDS)}
+                    className="bg-gradient-to-br from-[#002D74] to-[#001a45] backdrop-blur-xl rounded-3xl p-20 border-4 border-white/30 cursor-pointer shadow-2xl hover:shadow-[0_0_60px_rgba(0,45,116,0.6)] transition-all"
+                  >
+                    <motion.div
+                      animate={{ rotate: [0, -5, 0, 5, 0], y: [0, -10, 0] }}
+                      transition={{ duration: 4, repeat: Infinity }}
+                      className="text-white mb-10 flex justify-center"
+                    >
+                      <Building2 size={120} strokeWidth={1.5} />
+                    </motion.div>
+                    <h3 className="text-white text-7xl font-bold text-center">
+                      Corporate
+                    </h3>
+                  </motion.div>
                 </div>
 
                 {/* Bottom hint text */}
                 <motion.p
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 0.4 }}
-                  transition={{ delay: 1.5 }}
-                  className="text-white/40 text-2xl mt-16 text-center"
+                  transition={{ delay: 1.2 }}
+                  className="text-white/40 text-3xl text-center"
                 >
-                  Select a service to learn more, or continue to explore
+                  Select your banking category
                 </motion.p>
               </div>
             </motion.div>
           )}
 
-          {state === ExperienceState.CARD_DETAIL_1 && (
+          {/* Retail Cards Screen */}
+          {state === ExperienceState.RETAIL_CARDS && (
             <motion.div
-              key="vcp-video"
+              key="retail-cards"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: TIMINGS.TRANSITION_DURATION / 1000 }}
-              className="absolute inset-0 bg-black/95 overflow-hidden flex items-center justify-center"
-            >
-              {/* Close Button */}
-              <motion.button
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.3 }}
-                whileHover={{ scale: 1.1, rotate: 90 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={() => setState(ExperienceState.CARD_SELECTION)}
-                className="absolute top-16 right-16 z-50 p-6 bg-white/10 backdrop-blur-xl rounded-full border border-white/20 text-white hover:bg-white/20 transition-colors"
-              >
-                <X size={48} />
-              </motion.button>
-
-              {/* Video Player */}
-              <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.2, type: "spring", stiffness: 100 }}
-                className="relative w-full h-full max-w-7xl max-h-[90vh] flex items-center justify-center p-16"
-              >
-                <video
-                  controls
-                  autoPlay
-                  className="w-full h-full object-contain rounded-2xl shadow-2xl"
-                  src="/videos/vcp.mp4"
-                >
-                  Your browser does not support the video tag.
-                </video>
-              </motion.div>
-            </motion.div>
-          )}
-
-          {[
-            ExperienceState.CARD_DETAIL_2,
-            ExperienceState.CARD_DETAIL_3,
-            ExperienceState.CARD_DETAIL_4,
-            ExperienceState.CARD_DETAIL_5,
-            ExperienceState.CARD_DETAIL_6
-          ].includes(state) && (
-            <motion.div
-              key="card-detail"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: TIMINGS.TRANSITION_DURATION / 1000 }}
               className="absolute inset-0 bg-[#002D74] overflow-hidden"
             >
-              <MotionOverlay type="waves" />
+              <MotionOverlay type="grid" />
 
-              {/* Home Button - Top Left */}
+              {/* Home Button */}
               <motion.button
                 initial={{ opacity: 0, x: -50 }}
                 animate={{
@@ -385,73 +362,249 @@ const App: React.FC = () => {
                 ← Home
               </motion.button>
 
-              {/* Close Button */}
+              {/* Back Button */}
               <motion.button
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.5 }}
-                whileHover={{ scale: 1.1, rotate: 90 }}
+                initial={{ opacity: 0, x: 50 }}
+                animate={{
+                  opacity: 1,
+                  x: 0,
+                  boxShadow: [
+                    "0 0 20px rgba(61, 174, 43, 0.3)",
+                    "0 0 40px rgba(61, 174, 43, 0.5)",
+                    "0 0 20px rgba(61, 174, 43, 0.3)"
+                  ]
+                }}
+                transition={{
+                  delay: 0.8,
+                  type: "spring",
+                  stiffness: 100,
+                  boxShadow: { duration: 2, repeat: Infinity }
+                }}
+                whileHover={{
+                  scale: 1.1,
+                  x: 5,
+                  boxShadow: "0 0 50px rgba(61, 174, 43, 0.6)"
+                }}
                 whileTap={{ scale: 0.9 }}
-                onClick={() => setState(ExperienceState.CARD_SELECTION)}
-                className="absolute top-16 right-16 z-50 p-6 bg-white/10 backdrop-blur-xl rounded-full border border-white/20 text-white hover:bg-white/20 transition-colors"
+                onClick={() => setState(ExperienceState.SECTION_SELECTION)}
+                className="absolute top-16 right-16 z-50 px-12 py-6 bg-[#3DAE2B] backdrop-blur-xl rounded-full border border-[#3DAE2B] text-white text-3xl font-bold hover:bg-[#35991f] transition-colors shadow-2xl"
               >
-                <X size={48} />
+                ← Back
               </motion.button>
 
-              <div className="relative h-full w-full flex flex-col items-center justify-center p-24 text-center">
-                <motion.div
-                  initial={{ scale: 0, rotate: -180 }}
-                  animate={{ scale: 1, rotate: 0 }}
-                  transition={{ delay: 0.3, type: "spring", stiffness: 100 }}
-                  className="text-[#3DAE2B] mb-12"
-                >
-                  {React.cloneElement(
-                    CARDS.find(c => c.detailState === state)?.icon as React.ReactElement,
-                    { size: 120, strokeWidth: 1.5 }
-                  )}
-                </motion.div>
-
+              <div className="relative h-full w-full flex flex-col items-center justify-center p-16 pt-32">
                 <motion.h2
-                  initial={{ y: 30, opacity: 0 }}
+                  initial={{ y: -30, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.5 }}
-                  className="text-white text-8xl font-bold mb-12"
+                  transition={{ delay: 0.3 }}
+                  className="text-white text-7xl font-bold mb-20 text-center"
                 >
-                  {CARDS.find(c => c.detailState === state)?.title}
+                  Retail Banking Services
                 </motion.h2>
 
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: "200px" }}
-                  transition={{ delay: 0.7, duration: 1 }}
-                  className="h-1 bg-gradient-to-r from-[#3DAE2B] to-transparent mb-16"
-                />
-
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.9 }}
-                  className="text-white/80 text-4xl max-w-4xl leading-relaxed"
-                >
-                  This is a detailed view for {CARDS.find(c => c.detailState === state)?.title}.
-                  <br /><br />
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                </motion.p>
-
-                <motion.button
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.2 }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setState(ExperienceState.CARD_SELECTION)}
-                  className="mt-16 px-20 py-8 bg-[#3DAE2B] text-white text-4xl font-bold rounded-full shadow-2xl hover:bg-[#35991f] transition-colors"
-                >
-                  Back to Services
-                </motion.button>
+                <CardGrid cards={RETAIL_CARDS} onCardClick={(detailState) => setState(detailState)} />
               </div>
             </motion.div>
+          )}
+
+          {/* Corporate Cards Screen */}
+          {state === ExperienceState.CORPORATE_CARDS && (
+            <motion.div
+              key="corporate-cards"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: TIMINGS.TRANSITION_DURATION / 1000 }}
+              className="absolute inset-0 bg-[#002D74] overflow-hidden"
+            >
+              <MotionOverlay type="modular" />
+
+              {/* Home Button */}
+              <motion.button
+                initial={{ opacity: 0, x: -50 }}
+                animate={{
+                  opacity: 1,
+                  x: 0,
+                  boxShadow: [
+                    "0 0 20px rgba(255, 255, 255, 0.1)",
+                    "0 0 30px rgba(255, 255, 255, 0.2)",
+                    "0 0 20px rgba(255, 255, 255, 0.1)"
+                  ]
+                }}
+                transition={{
+                  delay: 0.8,
+                  type: "spring",
+                  stiffness: 100,
+                  boxShadow: { duration: 3, repeat: Infinity }
+                }}
+                whileHover={{ scale: 1.1, x: -5 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setState(ExperienceState.START_SCREEN)}
+                className="absolute top-16 left-16 z-50 px-12 py-6 bg-white/10 backdrop-blur-xl rounded-full border border-white/20 text-white text-3xl font-bold hover:bg-white/20 transition-colors shadow-2xl"
+              >
+                ← Home
+              </motion.button>
+
+              {/* Back Button */}
+              <motion.button
+                initial={{ opacity: 0, x: 50 }}
+                animate={{
+                  opacity: 1,
+                  x: 0,
+                  boxShadow: [
+                    "0 0 20px rgba(61, 174, 43, 0.3)",
+                    "0 0 40px rgba(61, 174, 43, 0.5)",
+                    "0 0 20px rgba(61, 174, 43, 0.3)"
+                  ]
+                }}
+                transition={{
+                  delay: 0.8,
+                  type: "spring",
+                  stiffness: 100,
+                  boxShadow: { duration: 2, repeat: Infinity }
+                }}
+                whileHover={{
+                  scale: 1.1,
+                  x: 5,
+                  boxShadow: "0 0 50px rgba(61, 174, 43, 0.6)"
+                }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setState(ExperienceState.SECTION_SELECTION)}
+                className="absolute top-16 right-16 z-50 px-12 py-6 bg-[#3DAE2B] backdrop-blur-xl rounded-full border border-[#3DAE2B] text-white text-3xl font-bold hover:bg-[#35991f] transition-colors shadow-2xl"
+              >
+                ← Back
+              </motion.button>
+
+              <div className="relative h-full w-full flex flex-col items-center justify-center p-16 pt-32">
+                <motion.h2
+                  initial={{ y: -30, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                  className="text-white text-7xl font-bold mb-20 text-center"
+                >
+                  Corporate Banking Services
+                </motion.h2>
+
+                <CardGrid cards={CORPORATE_CARDS} onCardClick={(detailState) => setState(detailState)} />
+              </div>
+            </motion.div>
+          )}
+
+          {/* Retail Detail Pages */}
+          {state === ExperienceState.RETAIL_MOBILE_APP && (
+            <VideoDetailPage
+              title="Mobile App"
+              contentTitle={RETAIL_CARDS[0].contentTitle!}
+              contentDescription={RETAIL_CARDS[0].contentDescription!}
+              videoPath={RETAIL_CARDS[0].videoPath!}
+              onClose={() => setState(ExperienceState.RETAIL_CARDS)}
+              onHome={() => setState(ExperienceState.START_SCREEN)}
+            />
+          )}
+
+          {state === ExperienceState.RETAIL_INSTANT_FINANCE && (
+            <VideoDetailPage
+              title="Instant Finance"
+              contentTitle={RETAIL_CARDS[1].contentTitle!}
+              contentDescription={RETAIL_CARDS[1].contentDescription!}
+              videoPath={RETAIL_CARDS[1].videoPath!}
+              onClose={() => setState(ExperienceState.RETAIL_CARDS)}
+              onHome={() => setState(ExperienceState.START_SCREEN)}
+            />
+          )}
+
+          {state === ExperienceState.RETAIL_INSTANT_PREPAID && (
+            <VideoDetailPage
+              title="Instant Prepaid Card"
+              contentTitle={RETAIL_CARDS[2].contentTitle!}
+              contentDescription={RETAIL_CARDS[2].contentDescription!}
+              videoPath={RETAIL_CARDS[2].videoPath!}
+              onClose={() => setState(ExperienceState.RETAIL_CARDS)}
+              onHome={() => setState(ExperienceState.START_SCREEN)}
+            />
+          )}
+
+          {state === ExperienceState.RETAIL_CARD_OFFERS && (
+            <VideoDetailPage
+              title="Card Linked Offers"
+              contentTitle={RETAIL_CARDS[3].contentTitle!}
+              contentDescription={RETAIL_CARDS[3].contentDescription!}
+              videoPath={RETAIL_CARDS[3].videoPath!}
+              onClose={() => setState(ExperienceState.RETAIL_CARDS)}
+              onHome={() => setState(ExperienceState.START_SCREEN)}
+            />
+          )}
+
+          {state === ExperienceState.RETAIL_DAWARDS && (
+            <VideoDetailPage
+              title="DAwards"
+              contentTitle={RETAIL_CARDS[4].contentTitle!}
+              contentDescription={RETAIL_CARDS[4].contentDescription!}
+              videoPath={RETAIL_CARDS[4].videoPath!}
+              onClose={() => setState(ExperienceState.RETAIL_CARDS)}
+              onHome={() => setState(ExperienceState.START_SCREEN)}
+            />
+          )}
+
+          {state === ExperienceState.RETAIL_GAME && (
+            <GamePage
+              title="Retail Gaming Zone"
+              onClose={() => setState(ExperienceState.RETAIL_CARDS)}
+              onHome={() => setState(ExperienceState.START_SCREEN)}
+            />
+          )}
+
+          {/* Corporate Detail Pages */}
+          {state === ExperienceState.CORPORATE_VCP && (
+            <VideoDetailPage
+              title="VCP"
+              contentTitle={CORPORATE_CARDS[0].contentTitle!}
+              contentDescription={CORPORATE_CARDS[0].contentDescription!}
+              videoPath={CORPORATE_CARDS[0].videoPath!}
+              onClose={() => setState(ExperienceState.CORPORATE_CARDS)}
+              onHome={() => setState(ExperienceState.START_SCREEN)}
+            />
+          )}
+
+          {state === ExperienceState.CORPORATE_WPS && (
+            <VideoDetailPage
+              title="WPS"
+              contentTitle={CORPORATE_CARDS[1].contentTitle!}
+              contentDescription={CORPORATE_CARDS[1].contentDescription!}
+              videoPath={CORPORATE_CARDS[1].videoPath!}
+              onClose={() => setState(ExperienceState.CORPORATE_CARDS)}
+              onHome={() => setState(ExperienceState.START_SCREEN)}
+            />
+          )}
+
+          {state === ExperienceState.CORPORATE_PAYMENT_GATEWAY && (
+            <VideoDetailPage
+              title="Payment Gateway"
+              contentTitle={CORPORATE_CARDS[2].contentTitle!}
+              contentDescription={CORPORATE_CARDS[2].contentDescription!}
+              videoPath={CORPORATE_CARDS[2].videoPath!}
+              onClose={() => setState(ExperienceState.CORPORATE_CARDS)}
+              onHome={() => setState(ExperienceState.START_SCREEN)}
+            />
+          )}
+
+          {state === ExperienceState.CORPORATE_RDC && (
+            <VideoDetailPage
+              title="RDC"
+              contentTitle={CORPORATE_CARDS[3].contentTitle!}
+              contentDescription={CORPORATE_CARDS[3].contentDescription!}
+              videoPath={CORPORATE_CARDS[3].videoPath!}
+              onClose={() => setState(ExperienceState.CORPORATE_CARDS)}
+              onHome={() => setState(ExperienceState.START_SCREEN)}
+            />
+          )}
+
+          {state === ExperienceState.CORPORATE_GAME && (
+            <GamePage
+              title="Corporate Challenge"
+              onClose={() => setState(ExperienceState.CORPORATE_CARDS)}
+              onHome={() => setState(ExperienceState.START_SCREEN)}
+            />
           )}
 
           {currentChapter && (
