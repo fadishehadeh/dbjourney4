@@ -27,12 +27,18 @@ const AssetPreloader: React.FC<AssetPreloaderProps> = ({ children }) => {
         loadedCount++;
         if (loadedCount === total) setLoaded(true);
       };
+      img.onerror = () => {
+        // Handle error by counting it as loaded to prevent infinite loading
+        loadedCount++;
+        console.warn(`Failed to load image: ${src}`);
+        if (loadedCount === total) setLoaded(true);
+      };
     });
   }, []);
 
   if (!loaded) {
     return (
-      <div className="fixed inset-0 bg-[#002D74] flex items-center justify-center">
+      <div className="fixed inset-0 bg-black flex items-center justify-center">
         <div className="w-12 h-12 border-4 border-white/20 border-t-[#3DAE2B] rounded-full animate-spin" />
       </div>
     );
