@@ -569,8 +569,10 @@ const App: React.FC = () => {
           {state === ExperienceState.RETAIL_GAME && (
             <GamePage
               title="Retail Gaming Zone"
+              titleAr="منطقة الألعاب للأفراد"
               onClose={() => setState(ExperienceState.RETAIL_CARDS)}
               onHome={() => setState(ExperienceState.START_SCREEN)}
+              language={language}
             />
           )}
 
@@ -638,8 +640,10 @@ const App: React.FC = () => {
           {state === ExperienceState.CORPORATE_GAME && (
             <GamePage
               title="Corporate Challenge"
+              titleAr="تحدي الشركات"
               onClose={() => setState(ExperienceState.CORPORATE_CARDS)}
               onHome={() => setState(ExperienceState.START_SCREEN)}
+              language={language}
             />
           )}
 
