@@ -35,18 +35,23 @@ export interface ChapterData {
   id: ExperienceState;
   backgroundImage: string;
   headline: string;
+  headlineAr: string;
   subline?: string;
+  sublineAr?: string;
   icons: React.ReactNode[];
-  overlayType: 'grid' | 'waves' | 'modular' | 'horizon';
+  overlayType: 'grid' | 'waves' | 'modular' | 'horizon' | 'stars';
 }
 
 export interface CardData {
   id: number;
   title: string;
+  titleAr: string;
   icon: React.ReactNode;
   detailState: ExperienceState;
   hasVideo?: boolean;
   videoPath?: string;
   contentTitle?: string;
+  contentTitleAr?: string;
   contentDescription?: string;
+  contentDescriptionAr?: string;
 }

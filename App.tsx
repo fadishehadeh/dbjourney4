@@ -12,6 +12,7 @@ import GamePage from './components/GamePage';
 
 const App: React.FC = () => {
   const [state, setState] = useState<ExperienceState>(ExperienceState.IDLE_LOOP);
+  const [language, setLanguage] = useState<'EN' | 'AR'>('EN');
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const autoProgressRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const adminResetRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -102,11 +103,100 @@ const App: React.FC = () => {
 
   return (
     <AssetPreloader>
-      <div 
-        className="relative w-full h-full overflow-hidden select-none bg-[#002D74] touch-none"
+      <div
+        className="relative w-full h-full overflow-hidden select-none bg-black touch-none"
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
       >
+        {/* Global Header - Appears on all pages except IDLE_LOOP */}
+        {state !== ExperienceState.IDLE_LOOP && (
+          <motion.div
+            initial={{ y: -100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+            className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-16 py-6 bg-black/90 backdrop-blur-xl border-b border-white/10"
+          >
+            {/* Logo */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setState(ExperienceState.START_SCREEN)}
+              className="flex items-center cursor-pointer"
+            >
+              <img
+                src="/images/dublogo-lg.svg"
+                alt="Dukhan Bank"
+                className="h-20 w-auto"
+              />
+            </motion.button>
+
+            {/* Right Side: Language Switcher and Retail/Corporate Selector */}
+            <div className="flex items-center gap-10">
+              {/* Language Switcher */}
+              <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md rounded-full px-3 py-3">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setLanguage('EN')}
+                  className={`px-8 py-3 rounded-full text-xl font-semibold transition-all ${
+                    language === 'EN'
+                      ? 'bg-white text-black'
+                      : 'text-white/60 hover:text-white'
+                  }`}
+                >
+                  EN
+                </motion.button>
+                <div className="w-px h-8 bg-white/20" />
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setLanguage('AR')}
+                  className={`px-8 py-3 rounded-full text-xl font-semibold transition-all ${
+                    language === 'AR'
+                      ? 'bg-white text-black'
+                      : 'text-white/60 hover:text-white'
+                  }`}
+                >
+                  AR
+                </motion.button>
+              </div>
+
+              {/* Retail/Corporate Selector Slider - Shows on all pages */}
+              <div className="relative flex items-center bg-white/10 backdrop-blur-md rounded-full p-2">
+                {/* Animated slider background */}
+                <motion.div
+                  animate={{
+                    x: state === ExperienceState.RETAIL_CARDS || state === ExperienceState.RETAIL_MOBILE_APP || state === ExperienceState.RETAIL_INSTANT_FINANCE || state === ExperienceState.RETAIL_INSTANT_PREPAID || state === ExperienceState.RETAIL_CARD_OFFERS || state === ExperienceState.RETAIL_DAWARDS || state === ExperienceState.RETAIL_GAME ? 0 : '100%',
+                    backgroundColor: state === ExperienceState.RETAIL_CARDS || state === ExperienceState.RETAIL_MOBILE_APP || state === ExperienceState.RETAIL_INSTANT_FINANCE || state === ExperienceState.RETAIL_INSTANT_PREPAID || state === ExperienceState.RETAIL_CARD_OFFERS || state === ExperienceState.RETAIL_DAWARDS || state === ExperienceState.RETAIL_GAME ? '#3DAE2B' : '#002D74'
+                  }}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  className="absolute inset-y-2 w-[calc(50%-4px)] rounded-full"
+                />
+
+                {/* Retail Button */}
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setState(ExperienceState.RETAIL_CARDS)}
+                  className="relative z-10 px-10 py-3 text-white text-xl font-semibold transition-colors rounded-full"
+                >
+                  {language === 'EN' ? 'Retail' : 'التجزئة'}
+                </motion.button>
+
+                {/* Corporate Button */}
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setState(ExperienceState.CORPORATE_CARDS)}
+                  className="relative z-10 px-10 py-3 text-white text-xl font-semibold transition-colors rounded-full"
+                >
+                  {language === 'EN' ? 'Corporate' : 'الشركات'}
+                </motion.button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         <AnimatePresence mode="wait">
           {state === ExperienceState.IDLE_LOOP && (
             <motion.div
@@ -115,10 +205,10 @@ const App: React.FC = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: TIMINGS.TRANSITION_DURATION / 1000 }}
-              className="absolute inset-0 flex flex-col items-center justify-center bg-[#002D74]"
+              className="absolute inset-0 flex flex-col items-center justify-center bg-black"
               onPointerUp={advance}
             >
-              <MotionOverlay type="waves" />
+              <MotionOverlay type="stars" />
               <motion.div
                 animate={{
                   scale: [1, 1.05, 1],
@@ -144,46 +234,86 @@ const App: React.FC = () => {
               key="start"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0, x: -100 }}
+              exit={{ opacity: 0 }}
               transition={{ duration: TIMINGS.TRANSITION_DURATION / 1000 }}
-              className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: `url('https://images.unsplash.com/photo-1639762681485-074b7f938ba0?auto=format&fit=crop&q=80&w=1080')` }}
-              onPointerUp={advance}
+              className="absolute inset-0 bg-black"
             >
-              <motion.div
-                className="absolute inset-0 bg-[#002D74]/80 backdrop-blur-sm"
-                animate={{ opacity: [0.8, 0.85, 0.8] }}
-                transition={{ duration: 5, repeat: Infinity }}
-              />
-              <div className="absolute inset-0 flex flex-col items-center justify-center p-16 text-center">
+              {/* Stars Background */}
+              <MotionOverlay type="stars" />
+
+              {/* Main Content */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-16 pt-32">
+                {/* Title */}
+                <motion.h1
+                  initial={{ y: 30, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.6, duration: 0.8 }}
+                  className="text-white text-9xl font-bold mb-10 leading-tight"
+                >
+                  {language === 'EN' ? (
+                    <>
+                      Wholesale & SME<br />Banking
+                    </>
+                  ) : (
+                    <>
+                      الخدمات المصرفية للجملة<br />والمؤسسات الصغيرة والمتوسطة
+                    </>
+                  )}
+                </motion.h1>
+
+                {/* Subtitle */}
+                <motion.p
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.9, duration: 0.8 }}
+                  className="text-white/70 text-4xl mb-20 font-light"
+                >
+                  {language === 'EN'
+                    ? 'Experience the future of corporate banking'
+                    : 'اختبر مستقبل الخدمات المصرفية للشركات'}
+                </motion.p>
+
+                {/* Animated Line */}
                 <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: '120px' }}
+                  transition={{ delay: 1.2, duration: 1 }}
+                  className="h-1 bg-gradient-to-r from-transparent via-[#3DAE2B] to-transparent mb-16"
+                />
+
+                {/* Start Experience Button */}
+                <motion.button
                   initial={{ y: 20, opacity: 0, scale: 0.9 }}
                   animate={{
                     y: 0,
                     opacity: 1,
-                    scale: 1,
-                    boxShadow: [
-                      "0 25px 50px -12px rgba(61, 174, 43, 0.25)",
-                      "0 25px 50px -12px rgba(61, 174, 43, 0.5)",
-                      "0 25px 50px -12px rgba(61, 174, 43, 0.25)"
-                    ]
+                    scale: 1
                   }}
-                  transition={{
-                    delay: 0.5,
-                    boxShadow: { duration: 2, repeat: Infinity }
+                  transition={{ delay: 1.5, duration: 0.8 }}
+                  whileHover={{
+                    scale: 1.05,
+                    boxShadow: '0 0 60px rgba(61, 174, 43, 0.6)'
                   }}
-                  whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="px-28 py-12 bg-[#3DAE2B] text-white text-7xl font-bold rounded-full shadow-2xl cursor-pointer"
+                  onClick={advance}
+                  className="relative px-40 py-10 bg-gradient-to-r from-[#2d8a1f] via-[#3DAE2B] to-[#2d8a1f] text-white text-5xl font-bold rounded-full shadow-2xl overflow-hidden group"
                 >
-                  Start Experience
-                </motion.div>
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: [0, 0.3, 0] }}
-                  transition={{ duration: 2, repeat: Infinity, delay: 1.5 }}
-                  className="absolute w-96 h-96 bg-[#3DAE2B] rounded-full blur-3xl"
-                />
+                  {/* Animated gradient overlay on hover */}
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                    animate={{
+                      x: ['-100%', '100%']
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: 'linear'
+                    }}
+                  />
+                  <span className="relative z-10">
+                    {language === 'EN' ? 'Start Experience' : 'ابدأ التجربة'}
+                  </span>
+                </motion.button>
               </div>
             </motion.div>
           )}
@@ -195,74 +325,18 @@ const App: React.FC = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: TIMINGS.TRANSITION_DURATION / 1000 }}
-              className="absolute inset-0 bg-[#002D74] overflow-hidden"
+              className="absolute inset-0 bg-black overflow-hidden"
             >
-              <MotionOverlay type="grid" />
+              <MotionOverlay type="stars" />
 
-              {/* Home Button - Top Left */}
-              <motion.button
-                initial={{ opacity: 0, x: -50 }}
-                animate={{
-                  opacity: 1,
-                  x: 0,
-                  boxShadow: [
-                    "0 0 20px rgba(255, 255, 255, 0.1)",
-                    "0 0 30px rgba(255, 255, 255, 0.2)",
-                    "0 0 20px rgba(255, 255, 255, 0.1)"
-                  ]
-                }}
-                transition={{
-                  delay: 0.8,
-                  type: "spring",
-                  stiffness: 100,
-                  boxShadow: { duration: 3, repeat: Infinity }
-                }}
-                whileHover={{ scale: 1.1, x: -5 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={() => setState(ExperienceState.START_SCREEN)}
-                className="absolute top-16 left-16 z-50 px-12 py-6 bg-white/10 backdrop-blur-xl rounded-full border border-white/20 text-white text-3xl font-bold hover:bg-white/20 transition-colors shadow-2xl"
-              >
-                ← Home
-              </motion.button>
-
-              {/* Continue Button - Top Right */}
-              <motion.button
-                initial={{ opacity: 0, x: 50 }}
-                animate={{
-                  opacity: 1,
-                  x: 0,
-                  boxShadow: [
-                    "0 0 20px rgba(61, 174, 43, 0.3)",
-                    "0 0 40px rgba(61, 174, 43, 0.5)",
-                    "0 0 20px rgba(61, 174, 43, 0.3)"
-                  ]
-                }}
-                transition={{
-                  delay: 0.8,
-                  type: "spring",
-                  stiffness: 100,
-                  boxShadow: { duration: 2, repeat: Infinity }
-                }}
-                whileHover={{
-                  scale: 1.1,
-                  x: 5,
-                  boxShadow: "0 0 50px rgba(61, 174, 43, 0.6)"
-                }}
-                whileTap={{ scale: 0.9 }}
-                onClick={() => setState(ExperienceState.CHAPTER_1)}
-                className="absolute top-16 right-16 z-50 px-12 py-6 bg-[#3DAE2B] backdrop-blur-xl rounded-full border border-[#3DAE2B] text-white text-3xl font-bold hover:bg-[#35991f] transition-colors shadow-2xl"
-              >
-                Continue →
-              </motion.button>
-
-              <div className="relative h-full w-full flex flex-col items-center justify-center p-16 gap-16">
+              <div className="relative h-full w-full flex flex-col items-center justify-center p-16 pt-32 gap-16">
                 <motion.h2
                   initial={{ y: -30, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.3 }}
                   className="text-white text-8xl font-bold text-center"
                 >
-                  Choose Your Journey
+                  {language === 'EN' ? 'Choose Your Journey' : 'اختر رحلتك'}
                 </motion.h2>
 
                 <div className="flex gap-16 items-center justify-center">
@@ -284,7 +358,7 @@ const App: React.FC = () => {
                       <UsersIcon size={120} strokeWidth={1.5} />
                     </motion.div>
                     <h3 className="text-white text-7xl font-bold text-center">
-                      Retail
+                      {language === 'EN' ? 'Retail' : 'التجزئة'}
                     </h3>
                   </motion.div>
 
@@ -306,7 +380,7 @@ const App: React.FC = () => {
                       <Building2 size={120} strokeWidth={1.5} />
                     </motion.div>
                     <h3 className="text-white text-7xl font-bold text-center">
-                      Corporate
+                      {language === 'EN' ? 'Corporate' : 'الشركات'}
                     </h3>
                   </motion.div>
                 </div>
@@ -318,7 +392,7 @@ const App: React.FC = () => {
                   transition={{ delay: 1.2 }}
                   className="text-white/40 text-3xl text-center"
                 >
-                  Select your banking category
+                  {language === 'EN' ? 'Select your banking category' : 'اختر فئة الخدمات المصرفية'}
                 </motion.p>
               </div>
             </motion.div>
@@ -332,78 +406,41 @@ const App: React.FC = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: TIMINGS.TRANSITION_DURATION / 1000 }}
-              className="absolute inset-0 bg-[#002D74] overflow-hidden"
+              className="absolute inset-0 bg-black overflow-hidden"
             >
-              <MotionOverlay type="grid" />
+              <MotionOverlay type="stars" />
 
-              {/* Home Button */}
-              <motion.button
-                initial={{ opacity: 0, x: -50 }}
-                animate={{
-                  opacity: 1,
-                  x: 0,
-                  boxShadow: [
-                    "0 0 20px rgba(255, 255, 255, 0.1)",
-                    "0 0 30px rgba(255, 255, 255, 0.2)",
-                    "0 0 20px rgba(255, 255, 255, 0.1)"
-                  ]
-                }}
-                transition={{
-                  delay: 0.8,
-                  type: "spring",
-                  stiffness: 100,
-                  boxShadow: { duration: 3, repeat: Infinity }
-                }}
-                whileHover={{ scale: 1.1, x: -5 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={() => setState(ExperienceState.START_SCREEN)}
-                className="absolute top-16 left-16 z-50 px-12 py-6 bg-white/10 backdrop-blur-xl rounded-full border border-white/20 text-white text-3xl font-bold hover:bg-white/20 transition-colors shadow-2xl"
-              >
-                ← Home
-              </motion.button>
-
-              {/* Back Button */}
-              <motion.button
-                initial={{ opacity: 0, x: 50 }}
-                animate={{
-                  opacity: 1,
-                  x: 0,
-                  boxShadow: [
-                    "0 0 20px rgba(61, 174, 43, 0.3)",
-                    "0 0 40px rgba(61, 174, 43, 0.5)",
-                    "0 0 20px rgba(61, 174, 43, 0.3)"
-                  ]
-                }}
-                transition={{
-                  delay: 0.8,
-                  type: "spring",
-                  stiffness: 100,
-                  boxShadow: { duration: 2, repeat: Infinity }
-                }}
-                whileHover={{
-                  scale: 1.1,
-                  x: 5,
-                  boxShadow: "0 0 50px rgba(61, 174, 43, 0.6)"
-                }}
-                whileTap={{ scale: 0.9 }}
-                onClick={() => setState(ExperienceState.SECTION_SELECTION)}
-                className="absolute top-16 right-16 z-50 px-12 py-6 bg-[#3DAE2B] backdrop-blur-xl rounded-full border border-[#3DAE2B] text-white text-3xl font-bold hover:bg-[#35991f] transition-colors shadow-2xl"
-              >
-                ← Back
-              </motion.button>
-
-              <div className="relative h-full w-full flex flex-col items-center justify-center p-16 pt-32">
-                <motion.h2
-                  initial={{ y: -30, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                  className="text-white text-7xl font-bold mb-20 text-center"
-                >
-                  Retail Banking Services
-                </motion.h2>
-
-                <CardGrid cards={RETAIL_CARDS} onCardClick={(detailState) => setState(detailState)} />
+              <div className="relative h-full w-full flex flex-col items-center justify-center px-[12%] py-[8%] pt-32 pb-40">
+                <CardGrid cards={RETAIL_CARDS} onCardClick={(detailState) => setState(detailState)} language={language} />
               </div>
+
+              {/* Sticky Footer */}
+              <motion.div
+                initial={{ y: 100, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.5, duration: 0.8 }}
+                className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-between px-16 py-8 bg-black/90 backdrop-blur-xl border-t border-white/10"
+              >
+                {/* Home Button */}
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setState(ExperienceState.START_SCREEN)}
+                  className="flex items-center gap-3 px-10 py-5 bg-white/10 backdrop-blur-xl rounded-full border border-white/20 text-white text-2xl font-semibold hover:bg-white/20 transition-colors"
+                >
+                  {language === 'EN' ? 'Home' : 'الرئيسية'}
+                </motion.button>
+
+                {/* Back Button */}
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setState(ExperienceState.SECTION_SELECTION)}
+                  className="flex items-center gap-3 px-10 py-5 bg-[#3DAE2B] backdrop-blur-xl rounded-full border border-[#3DAE2B] text-white text-2xl font-semibold hover:bg-[#35991f] transition-colors"
+                >
+                  {language === 'EN' ? 'Back' : 'رجوع'}
+                </motion.button>
+              </motion.div>
             </motion.div>
           )}
 
@@ -415,134 +452,117 @@ const App: React.FC = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: TIMINGS.TRANSITION_DURATION / 1000 }}
-              className="absolute inset-0 bg-[#002D74] overflow-hidden"
+              className="absolute inset-0 bg-black overflow-hidden"
             >
-              <MotionOverlay type="modular" />
+              <MotionOverlay type="stars" />
 
-              {/* Home Button */}
-              <motion.button
-                initial={{ opacity: 0, x: -50 }}
-                animate={{
-                  opacity: 1,
-                  x: 0,
-                  boxShadow: [
-                    "0 0 20px rgba(255, 255, 255, 0.1)",
-                    "0 0 30px rgba(255, 255, 255, 0.2)",
-                    "0 0 20px rgba(255, 255, 255, 0.1)"
-                  ]
-                }}
-                transition={{
-                  delay: 0.8,
-                  type: "spring",
-                  stiffness: 100,
-                  boxShadow: { duration: 3, repeat: Infinity }
-                }}
-                whileHover={{ scale: 1.1, x: -5 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={() => setState(ExperienceState.START_SCREEN)}
-                className="absolute top-16 left-16 z-50 px-12 py-6 bg-white/10 backdrop-blur-xl rounded-full border border-white/20 text-white text-3xl font-bold hover:bg-white/20 transition-colors shadow-2xl"
-              >
-                ← Home
-              </motion.button>
-
-              {/* Back Button */}
-              <motion.button
-                initial={{ opacity: 0, x: 50 }}
-                animate={{
-                  opacity: 1,
-                  x: 0,
-                  boxShadow: [
-                    "0 0 20px rgba(61, 174, 43, 0.3)",
-                    "0 0 40px rgba(61, 174, 43, 0.5)",
-                    "0 0 20px rgba(61, 174, 43, 0.3)"
-                  ]
-                }}
-                transition={{
-                  delay: 0.8,
-                  type: "spring",
-                  stiffness: 100,
-                  boxShadow: { duration: 2, repeat: Infinity }
-                }}
-                whileHover={{
-                  scale: 1.1,
-                  x: 5,
-                  boxShadow: "0 0 50px rgba(61, 174, 43, 0.6)"
-                }}
-                whileTap={{ scale: 0.9 }}
-                onClick={() => setState(ExperienceState.SECTION_SELECTION)}
-                className="absolute top-16 right-16 z-50 px-12 py-6 bg-[#3DAE2B] backdrop-blur-xl rounded-full border border-[#3DAE2B] text-white text-3xl font-bold hover:bg-[#35991f] transition-colors shadow-2xl"
-              >
-                ← Back
-              </motion.button>
-
-              <div className="relative h-full w-full flex flex-col items-center justify-center p-16 pt-32">
-                <motion.h2
-                  initial={{ y: -30, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                  className="text-white text-7xl font-bold mb-20 text-center"
-                >
-                  Corporate Banking Services
-                </motion.h2>
-
-                <CardGrid cards={CORPORATE_CARDS} onCardClick={(detailState) => setState(detailState)} />
+              <div className="relative h-full w-full flex flex-col items-center justify-center px-[12%] py-[8%] pt-32 pb-40">
+                <CardGrid cards={CORPORATE_CARDS} onCardClick={(detailState) => setState(detailState)} language={language} />
               </div>
+
+              {/* Sticky Footer */}
+              <motion.div
+                initial={{ y: 100, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.5, duration: 0.8 }}
+                className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-between px-16 py-8 bg-black/90 backdrop-blur-xl border-t border-white/10"
+              >
+                {/* Home Button */}
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setState(ExperienceState.START_SCREEN)}
+                  className="flex items-center gap-3 px-10 py-5 bg-white/10 backdrop-blur-xl rounded-full border border-white/20 text-white text-2xl font-semibold hover:bg-white/20 transition-colors"
+                >
+                  {language === 'EN' ? 'Home' : 'الرئيسية'}
+                </motion.button>
+
+                {/* Back Button */}
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setState(ExperienceState.SECTION_SELECTION)}
+                  className="flex items-center gap-3 px-10 py-5 bg-[#3DAE2B] backdrop-blur-xl rounded-full border border-[#3DAE2B] text-white text-2xl font-semibold hover:bg-[#35991f] transition-colors"
+                >
+                  {language === 'EN' ? 'Back' : 'رجوع'}
+                </motion.button>
+              </motion.div>
             </motion.div>
           )}
 
           {/* Retail Detail Pages */}
           {state === ExperienceState.RETAIL_MOBILE_APP && (
             <VideoDetailPage
-              title="Mobile App"
+              title={RETAIL_CARDS[0].title}
+              titleAr={RETAIL_CARDS[0].titleAr}
               contentTitle={RETAIL_CARDS[0].contentTitle!}
+              contentTitleAr={RETAIL_CARDS[0].contentTitleAr!}
               contentDescription={RETAIL_CARDS[0].contentDescription!}
+              contentDescriptionAr={RETAIL_CARDS[0].contentDescriptionAr!}
               videoPath={RETAIL_CARDS[0].videoPath!}
               onClose={() => setState(ExperienceState.RETAIL_CARDS)}
               onHome={() => setState(ExperienceState.START_SCREEN)}
+              language={language}
             />
           )}
 
           {state === ExperienceState.RETAIL_INSTANT_FINANCE && (
             <VideoDetailPage
-              title="Instant Finance"
+              title={RETAIL_CARDS[1].title}
+              titleAr={RETAIL_CARDS[1].titleAr}
               contentTitle={RETAIL_CARDS[1].contentTitle!}
+              contentTitleAr={RETAIL_CARDS[1].contentTitleAr!}
               contentDescription={RETAIL_CARDS[1].contentDescription!}
+              contentDescriptionAr={RETAIL_CARDS[1].contentDescriptionAr!}
               videoPath={RETAIL_CARDS[1].videoPath!}
               onClose={() => setState(ExperienceState.RETAIL_CARDS)}
               onHome={() => setState(ExperienceState.START_SCREEN)}
+              language={language}
             />
           )}
 
           {state === ExperienceState.RETAIL_INSTANT_PREPAID && (
             <VideoDetailPage
-              title="Instant Prepaid Card"
+              title={RETAIL_CARDS[2].title}
+              titleAr={RETAIL_CARDS[2].titleAr}
               contentTitle={RETAIL_CARDS[2].contentTitle!}
+              contentTitleAr={RETAIL_CARDS[2].contentTitleAr!}
               contentDescription={RETAIL_CARDS[2].contentDescription!}
+              contentDescriptionAr={RETAIL_CARDS[2].contentDescriptionAr!}
               videoPath={RETAIL_CARDS[2].videoPath!}
               onClose={() => setState(ExperienceState.RETAIL_CARDS)}
               onHome={() => setState(ExperienceState.START_SCREEN)}
+              language={language}
             />
           )}
 
           {state === ExperienceState.RETAIL_CARD_OFFERS && (
             <VideoDetailPage
-              title="Card Linked Offers"
+              title={RETAIL_CARDS[3].title}
+              titleAr={RETAIL_CARDS[3].titleAr}
               contentTitle={RETAIL_CARDS[3].contentTitle!}
+              contentTitleAr={RETAIL_CARDS[3].contentTitleAr!}
               contentDescription={RETAIL_CARDS[3].contentDescription!}
+              contentDescriptionAr={RETAIL_CARDS[3].contentDescriptionAr!}
               videoPath={RETAIL_CARDS[3].videoPath!}
               onClose={() => setState(ExperienceState.RETAIL_CARDS)}
               onHome={() => setState(ExperienceState.START_SCREEN)}
+              language={language}
             />
           )}
 
           {state === ExperienceState.RETAIL_DAWARDS && (
             <VideoDetailPage
-              title="DAwards"
+              title={RETAIL_CARDS[4].title}
+              titleAr={RETAIL_CARDS[4].titleAr}
               contentTitle={RETAIL_CARDS[4].contentTitle!}
+              contentTitleAr={RETAIL_CARDS[4].contentTitleAr!}
               contentDescription={RETAIL_CARDS[4].contentDescription!}
+              contentDescriptionAr={RETAIL_CARDS[4].contentDescriptionAr!}
               videoPath={RETAIL_CARDS[4].videoPath!}
               onClose={() => setState(ExperienceState.RETAIL_CARDS)}
               onHome={() => setState(ExperienceState.START_SCREEN)}
+              language={language}
             />
           )}
 
@@ -557,45 +577,61 @@ const App: React.FC = () => {
           {/* Corporate Detail Pages */}
           {state === ExperienceState.CORPORATE_VCP && (
             <VideoDetailPage
-              title="VCP"
+              title={CORPORATE_CARDS[0].title}
+              titleAr={CORPORATE_CARDS[0].titleAr}
               contentTitle={CORPORATE_CARDS[0].contentTitle!}
+              contentTitleAr={CORPORATE_CARDS[0].contentTitleAr!}
               contentDescription={CORPORATE_CARDS[0].contentDescription!}
+              contentDescriptionAr={CORPORATE_CARDS[0].contentDescriptionAr!}
               videoPath={CORPORATE_CARDS[0].videoPath!}
               onClose={() => setState(ExperienceState.CORPORATE_CARDS)}
               onHome={() => setState(ExperienceState.START_SCREEN)}
+              language={language}
             />
           )}
 
           {state === ExperienceState.CORPORATE_WPS && (
             <VideoDetailPage
-              title="WPS"
+              title={CORPORATE_CARDS[1].title}
+              titleAr={CORPORATE_CARDS[1].titleAr}
               contentTitle={CORPORATE_CARDS[1].contentTitle!}
+              contentTitleAr={CORPORATE_CARDS[1].contentTitleAr!}
               contentDescription={CORPORATE_CARDS[1].contentDescription!}
+              contentDescriptionAr={CORPORATE_CARDS[1].contentDescriptionAr!}
               videoPath={CORPORATE_CARDS[1].videoPath!}
               onClose={() => setState(ExperienceState.CORPORATE_CARDS)}
               onHome={() => setState(ExperienceState.START_SCREEN)}
+              language={language}
             />
           )}
 
           {state === ExperienceState.CORPORATE_PAYMENT_GATEWAY && (
             <VideoDetailPage
-              title="Payment Gateway"
+              title={CORPORATE_CARDS[2].title}
+              titleAr={CORPORATE_CARDS[2].titleAr}
               contentTitle={CORPORATE_CARDS[2].contentTitle!}
+              contentTitleAr={CORPORATE_CARDS[2].contentTitleAr!}
               contentDescription={CORPORATE_CARDS[2].contentDescription!}
+              contentDescriptionAr={CORPORATE_CARDS[2].contentDescriptionAr!}
               videoPath={CORPORATE_CARDS[2].videoPath!}
               onClose={() => setState(ExperienceState.CORPORATE_CARDS)}
               onHome={() => setState(ExperienceState.START_SCREEN)}
+              language={language}
             />
           )}
 
           {state === ExperienceState.CORPORATE_RDC && (
             <VideoDetailPage
-              title="RDC"
+              title={CORPORATE_CARDS[3].title}
+              titleAr={CORPORATE_CARDS[3].titleAr}
               contentTitle={CORPORATE_CARDS[3].contentTitle!}
+              contentTitleAr={CORPORATE_CARDS[3].contentTitleAr!}
               contentDescription={CORPORATE_CARDS[3].contentDescription!}
+              contentDescriptionAr={CORPORATE_CARDS[3].contentDescriptionAr!}
               videoPath={CORPORATE_CARDS[3].videoPath!}
               onClose={() => setState(ExperienceState.CORPORATE_CARDS)}
               onHome={() => setState(ExperienceState.START_SCREEN)}
+              language={language}
             />
           )}
 
@@ -620,16 +656,16 @@ const App: React.FC = () => {
               className="absolute inset-0 overflow-hidden"
             >
               {/* Background with drift */}
-              <motion.div 
+              <motion.div
                 animate={{ scale: 1.15, x: [-30, 30] }}
                 transition={{ duration: 25, repeat: Infinity, repeatType: "reverse", ease: "linear" }}
                 className="absolute inset-0 bg-cover bg-center"
                 style={{ backgroundImage: `url('${currentChapter.backgroundImage}')` }}
               />
-              {/* Strengthened Gradient Overlays for Maximum Contrast */}
-              <div className="absolute inset-0 bg-[#002D74]/60" /> {/* Uniform Dark Tint */}
-              <div className="absolute inset-0 bg-gradient-to-b from-[#002D74]/95 via-[#002D74]/50 to-[#002D74]/95" />
-              
+              {/* Dark Gradient Overlays for Maximum Contrast */}
+              <div className="absolute inset-0 bg-black/70" /> {/* Uniform Dark Tint */}
+              <div className="absolute inset-0 bg-gradient-to-b from-black/95 via-black/60 to-black/95" />
+
               <MotionOverlay type={currentChapter.overlayType} />
 
               {/* Home Button - Top Left */}
@@ -728,7 +764,7 @@ const App: React.FC = () => {
                   transition={{ delay: 0.6, duration: 0.8, type: "spring", stiffness: 100 }}
                   className="text-white text-8xl font-bold leading-tight mb-14 tracking-tight drop-shadow-2xl"
                 >
-                  {currentChapter.headline.split(' ').map((word, idx) => (
+                  {(language === 'EN' ? currentChapter.headline : currentChapter.headlineAr).split(' ').map((word, idx) => (
                     <motion.span
                       key={idx}
                       initial={{ opacity: 0, y: 20 }}
@@ -748,7 +784,7 @@ const App: React.FC = () => {
                     transition={{ delay: 1.2, duration: 0.8 }}
                     className="text-white/95 text-4xl max-w-4xl font-light leading-relaxed drop-shadow-lg"
                   >
-                    {currentChapter.subline}
+                    {language === 'EN' ? currentChapter.subline : currentChapter.sublineAr}
                   </motion.p>
                 )}
 
@@ -770,9 +806,9 @@ const App: React.FC = () => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: TIMINGS.TRANSITION_DURATION / 1000 }}
-              className="absolute inset-0 flex flex-col items-center justify-center bg-[#002D74] text-center px-12"
+              className="absolute inset-0 flex flex-col items-center justify-center bg-black text-center px-12"
             >
-              <MotionOverlay type="horizon" />
+              <MotionOverlay type="stars" />
 
               {/* Home Button - Top Left */}
               <motion.button
@@ -797,7 +833,7 @@ const App: React.FC = () => {
                 onClick={() => setState(ExperienceState.START_SCREEN)}
                 className="absolute top-16 left-16 z-50 px-12 py-6 bg-white/10 backdrop-blur-xl rounded-full border border-white/20 text-white text-3xl font-bold hover:bg-white/20 transition-colors shadow-2xl"
               >
-                ← Home
+                {language === 'EN' ? '← Home' : 'الرئيسية ←'}
               </motion.button>
 
               {/* Restart Button - Top Right */}
@@ -827,7 +863,7 @@ const App: React.FC = () => {
                 onClick={() => setState(ExperienceState.IDLE_LOOP)}
                 className="absolute top-16 right-16 z-50 px-12 py-6 bg-[#3DAE2B] backdrop-blur-xl rounded-full border border-[#3DAE2B] text-white text-3xl font-bold hover:bg-[#35991f] transition-colors shadow-2xl"
               >
-                Restart ↻
+                {language === 'EN' ? 'Restart ↻' : 'إعادة التشغيل ↻'}
               </motion.button>
               <motion.div
                 initial={{ opacity: 0 }}
@@ -868,7 +904,7 @@ const App: React.FC = () => {
                   transition={{ delay: 0.8 }}
                   className="text-white text-8xl font-bold relative z-10"
                 >
-                  {"Future Forward".split('').map((char, idx) => (
+                  {(language === 'EN' ? "Future Forward" : "نحو المستقبل").split('').map((char, idx) => (
                     <motion.span
                       key={idx}
                       initial={{ opacity: 0, y: 20 }}
@@ -894,7 +930,7 @@ const App: React.FC = () => {
                   transition={{ delay: 2 }}
                   className="text-white/40 text-3xl uppercase tracking-[0.4em] font-light relative z-10"
                 >
-                  Dukhan Bank • Web Summit
+                  {language === 'EN' ? 'Dukhan Bank • Web Summit' : 'بنك دخان • ويب سوميت'}
                 </motion.p>
               </motion.div>
             </motion.div>
@@ -996,7 +1032,9 @@ const App: React.FC = () => {
             }}
             transition={{ duration: 3, repeat: Infinity }}
           >
-            {state === ExperienceState.IDLE_LOOP ? "Touch to Start" : "Swipe to Navigate"}
+            {state === ExperienceState.IDLE_LOOP
+              ? (language === 'EN' ? "Touch to Start" : "المس للبدء")
+              : (language === 'EN' ? "Swipe to Navigate" : "اسحب للتنقل")}
           </motion.span>
         </motion.div>
       </div>

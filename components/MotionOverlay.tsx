@@ -2,7 +2,7 @@
 import React from 'react';
 
 interface MotionOverlayProps {
-  type: 'grid' | 'waves' | 'modular' | 'horizon';
+  type: 'grid' | 'waves' | 'modular' | 'horizon' | 'stars';
 }
 
 const MotionOverlay: React.FC<MotionOverlayProps> = ({ type }) => {
@@ -81,6 +81,38 @@ const MotionOverlay: React.FC<MotionOverlayProps> = ({ type }) => {
           @keyframes sweep {
             0%, 100% { transform: translateY(-20px); opacity: 0; }
             50% { transform: translateY(20px); opacity: 1; }
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  if (type === 'stars') {
+    return (
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Generate multiple layers of stars with different sizes and speeds */}
+        {[...Array(100)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute bg-white rounded-full"
+            style={{
+              width: `${Math.random() * 3 + 1}px`,
+              height: `${Math.random() * 3 + 1}px`,
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              opacity: Math.random() * 0.8 + 0.2,
+              animation: `twinkle ${Math.random() * 3 + 2}s ease-in-out infinite ${Math.random() * 2}s, float ${Math.random() * 20 + 15}s linear infinite ${Math.random() * 5}s`
+            }}
+          />
+        ))}
+        <style>{`
+          @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+          }
+          @keyframes float {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(-20px); }
           }
         `}</style>
       </div>
