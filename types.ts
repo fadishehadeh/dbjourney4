@@ -3,9 +3,9 @@
 import React from 'react';
 
 export enum ExperienceState {
-  IDLE_LOOP = 'IDLE_LOOP',
-  START_SCREEN = 'START_SCREEN',
-  SECTION_SELECTION = 'SECTION_SELECTION',
+  // Main landing screens
+  CORPORATE_LANDING = 'CORPORATE_LANDING',
+  RETAIL_LANDING = 'RETAIL_LANDING',
 
   // Retail Section
   RETAIL_CARDS = 'RETAIL_CARDS',

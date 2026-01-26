@@ -1,8 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Play, X } from 'lucide-react';
+import { ArrowLeft, Play, X, QrCode } from 'lucide-react';
 import { ExperienceState } from '../types';
-import MotionOverlay from './MotionOverlay';
 
 interface VideoDetailPageProps {
   title: string;
@@ -15,6 +14,7 @@ interface VideoDetailPageProps {
   onClose: () => void;
   onHome: () => void;
   language: 'EN' | 'AR';
+  type?: 'retail' | 'corporate';
 }
 
 const VideoDetailPage: React.FC<VideoDetailPageProps> = ({
@@ -27,9 +27,12 @@ const VideoDetailPage: React.FC<VideoDetailPageProps> = ({
   videoPath,
   onClose,
   onHome,
-  language
+  language,
+  type = 'retail'
 }) => {
   const [showVideo, setShowVideo] = React.useState(false);
+
+  const qrColor = type === 'retail' ? '#3DAE2B' : '#002D74';
 
   return (
     <motion.div
@@ -40,8 +43,19 @@ const VideoDetailPage: React.FC<VideoDetailPageProps> = ({
       transition={{ duration: 0.8 }}
       className="absolute inset-0 bg-black overflow-hidden"
     >
-      {/* Stars Background */}
-      <MotionOverlay type="stars" />
+      {/* Stars Video Background */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover"
+      >
+        <source src="/videos/stars.mp4" type="video/mp4" />
+      </video>
+
+      {/* Black Tint Overlay - 40% */}
+      <div className="absolute inset-0 bg-black/40 z-0" />
 
       {!showVideo ? (
         <div className={`relative h-full w-full flex items-center justify-between px-[8%] py-[6%] pt-32 pb-40 gap-12 overflow-hidden ${language === 'AR' ? 'flex-row-reverse text-right' : ''}`}>
@@ -135,6 +149,27 @@ const VideoDetailPage: React.FC<VideoDetailPageProps> = ({
                 {language === 'EN' ? 'Interactive demo' : 'عرض توضيحي تفاعلي'}
               </p>
             </motion.button>
+
+            {/* QR Code Placeholder */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.0 }}
+              className="mt-8 bg-white/5 backdrop-blur-xl rounded-2xl p-8 border border-white/10"
+            >
+              <div className="flex flex-col items-center">
+                {/* QR Code Icon Placeholder */}
+                <div
+                  className="w-40 h-40 rounded-xl flex items-center justify-center border-4"
+                  style={{
+                    backgroundColor: 'white',
+                    borderColor: qrColor
+                  }}
+                >
+                  <QrCode size={120} style={{ color: qrColor }} />
+                </div>
+              </div>
+            </motion.div>
           </motion.div>
         </div>
       ) : (

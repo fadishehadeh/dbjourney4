@@ -1,7 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { QrCode, ArrowRight, Lock, Puzzle } from 'lucide-react';
-import MotionOverlay from './MotionOverlay';
 
 interface GamePageProps {
   title: string;
@@ -26,8 +25,19 @@ const GamePage: React.FC<GamePageProps> = ({ title, titleAr, onClose, onHome, la
       transition={{ duration: 0.8 }}
       className="absolute inset-0 bg-black overflow-hidden"
     >
-      {/* Stars Background */}
-      <MotionOverlay type="stars" />
+      {/* Stars Video Background */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover"
+      >
+        <source src="/videos/stars.mp4" type="video/mp4" />
+      </video>
+
+      {/* Black Tint Overlay - 40% */}
+      <div className="absolute inset-0 bg-black/40 z-0" />
 
       <div className="relative h-full w-full flex flex-col items-center justify-center p-24 pt-32 pb-40 text-center">
         <motion.h2
@@ -60,11 +70,14 @@ const GamePage: React.FC<GamePageProps> = ({ title, titleAr, onClose, onHome, la
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.9, type: "spring" }}
-          className="bg-white p-12 rounded-3xl mb-16 shadow-2xl"
+          className="bg-white p-12 rounded-3xl mb-16 shadow-2xl border-4 border-[#3DAE2B]"
         >
-          <QrCode size={220} className="text-[#002D74]" strokeWidth={1.5} />
-          <p className="text-[#002D74] text-2xl mt-6 font-bold">
-            {language === 'EN' ? 'Scan to Register' : 'امسح للتسجيل'}
+          <QrCode size={220} className="text-[#3DAE2B]" strokeWidth={1.5} />
+          <p className="text-[#3DAE2B] text-2xl mt-6 font-bold">
+            {language === 'EN' ? 'Game QR' : 'رمز QR للعبة'}
+          </p>
+          <p className="text-gray-600 text-sm mt-2">
+            {language === 'EN' ? 'Scan to learn more' : 'امسح لمعرفة المزيد'}
           </p>
         </motion.div>
 

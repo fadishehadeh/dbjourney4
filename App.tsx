@@ -1,26 +1,23 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence, PanInfo } from 'framer-motion';
-import { Orbit, ChevronLeft, ChevronRight, Building2, Users as UsersIcon } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { ExperienceState } from './types';
 import { TIMINGS, CHAPTERS, COLORS, RETAIL_CARDS, CORPORATE_CARDS } from './constants';
 import AssetPreloader from './components/AssetPreloader';
-import MotionOverlay from './components/MotionOverlay';
 import CardGrid from './components/CardGrid';
 import VideoDetailPage from './components/VideoDetailPage';
 import GamePage from './components/GamePage';
 
 const App: React.FC = () => {
-  const [state, setState] = useState<ExperienceState>(ExperienceState.IDLE_LOOP);
+  const [state, setState] = useState<ExperienceState>(ExperienceState.CORPORATE_LANDING);
   const [language, setLanguage] = useState<'EN' | 'AR'>('EN');
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const autoProgressRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const adminResetRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const states = [
-    ExperienceState.IDLE_LOOP,
-    ExperienceState.START_SCREEN,
-    ExperienceState.SECTION_SELECTION,
+    ExperienceState.CORPORATE_LANDING,
     ExperienceState.CHAPTER_1,
     ExperienceState.CHAPTER_2,
     ExperienceState.CHAPTER_3,
@@ -29,12 +26,8 @@ const App: React.FC = () => {
   ];
 
   const resetIdleTimer = useCallback(() => {
+    // Idle timer disabled - app will not auto-reset
     if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
-    if (state !== ExperienceState.IDLE_LOOP) {
-      idleTimerRef.current = setTimeout(() => {
-        setState(ExperienceState.IDLE_LOOP);
-      }, TIMINGS.IDLE_TIMEOUT);
-    }
   }, [state]);
 
   const advance = useCallback(() => {
@@ -58,10 +51,11 @@ const App: React.FC = () => {
   useEffect(() => {
     if (autoProgressRef.current) clearTimeout(autoProgressRef.current);
 
-    // Only auto-progress from END_STATE back to IDLE_LOOP
-    if (state === ExperienceState.END_STATE) {
-      autoProgressRef.current = setTimeout(() => setState(ExperienceState.IDLE_LOOP), TIMINGS.END_RESET_TIMEOUT);
-    }
+    // Auto-reset disabled - app will stay on END_STATE
+    // Commented out to prevent auto-reset to idle screen
+    // if (state === ExperienceState.END_STATE) {
+    //   autoProgressRef.current = setTimeout(() => setState(ExperienceState.IDLE_LOOP), TIMINGS.END_RESET_TIMEOUT);
+    // }
 
     return () => {
       if (autoProgressRef.current) clearTimeout(autoProgressRef.current);
@@ -89,7 +83,7 @@ const App: React.FC = () => {
     // Admin reset logic (3s hold in corner)
     if (e.clientX < 100 && e.clientY < 100) {
       adminResetRef.current = setTimeout(() => {
-        setState(ExperienceState.IDLE_LOOP);
+        setState(ExperienceState.CORPORATE_LANDING);
       }, 3000);
     }
   };
@@ -108,27 +102,26 @@ const App: React.FC = () => {
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
       >
-        {/* Global Header - Appears on all pages except IDLE_LOOP */}
-        {state !== ExperienceState.IDLE_LOOP && (
-          <motion.div
-            initial={{ y: -100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
-            className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-16 py-6 bg-black/90 backdrop-blur-xl border-b border-white/10"
+        {/* Global Header - Appears on all pages */}
+        <motion.div
+          initial={{ y: -100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.8 }}
+          className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-16 py-6 bg-black/90 backdrop-blur-xl border-b border-white/10"
+        >
+          {/* Logo */}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setState(ExperienceState.CORPORATE_LANDING)}
+            className="flex items-center cursor-pointer"
           >
-            {/* Logo */}
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setState(ExperienceState.START_SCREEN)}
-              className="flex items-center cursor-pointer"
-            >
-              <img
-                src="/images/dublogo-lg.svg"
-                alt="Dukhan Bank"
-                className="h-20 w-auto"
-              />
-            </motion.button>
+            <img
+              src="/images/dublogo-lg.svg"
+              alt="Dukhan Bank"
+              className="h-20 w-auto"
+            />
+          </motion.button>
 
             {/* Right Side: Language Switcher and Retail/Corporate Selector */}
             <div className="flex items-center gap-10">
@@ -166,8 +159,8 @@ const App: React.FC = () => {
                 {/* Animated slider background */}
                 <motion.div
                   animate={{
-                    x: state === ExperienceState.RETAIL_CARDS || state === ExperienceState.RETAIL_MOBILE_APP || state === ExperienceState.RETAIL_INSTANT_FINANCE || state === ExperienceState.RETAIL_INSTANT_PREPAID || state === ExperienceState.RETAIL_CARD_OFFERS || state === ExperienceState.RETAIL_DAWARDS || state === ExperienceState.RETAIL_GAME ? 0 : '100%',
-                    backgroundColor: state === ExperienceState.RETAIL_CARDS || state === ExperienceState.RETAIL_MOBILE_APP || state === ExperienceState.RETAIL_INSTANT_FINANCE || state === ExperienceState.RETAIL_INSTANT_PREPAID || state === ExperienceState.RETAIL_CARD_OFFERS || state === ExperienceState.RETAIL_DAWARDS || state === ExperienceState.RETAIL_GAME ? '#3DAE2B' : '#002D74'
+                    x: state === ExperienceState.RETAIL_LANDING || state === ExperienceState.RETAIL_CARDS || state === ExperienceState.RETAIL_MOBILE_APP || state === ExperienceState.RETAIL_INSTANT_FINANCE || state === ExperienceState.RETAIL_INSTANT_PREPAID || state === ExperienceState.RETAIL_CARD_OFFERS || state === ExperienceState.RETAIL_DAWARDS || state === ExperienceState.RETAIL_GAME ? 0 : '100%',
+                    backgroundColor: state === ExperienceState.RETAIL_LANDING || state === ExperienceState.RETAIL_CARDS || state === ExperienceState.RETAIL_MOBILE_APP || state === ExperienceState.RETAIL_INSTANT_FINANCE || state === ExperienceState.RETAIL_INSTANT_PREPAID || state === ExperienceState.RETAIL_CARD_OFFERS || state === ExperienceState.RETAIL_DAWARDS || state === ExperienceState.RETAIL_GAME ? '#3DAE2B' : '#002D74'
                   }}
                   transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   className="absolute inset-y-2 w-[calc(50%-4px)] rounded-full"
@@ -177,7 +170,7 @@ const App: React.FC = () => {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => setState(ExperienceState.RETAIL_CARDS)}
+                  onClick={() => setState(ExperienceState.RETAIL_LANDING)}
                   className="relative z-10 px-10 py-3 text-white text-xl font-semibold transition-colors rounded-full"
                 >
                   {language === 'EN' ? 'Retail' : 'التجزئة'}
@@ -187,7 +180,7 @@ const App: React.FC = () => {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => setState(ExperienceState.CORPORATE_CARDS)}
+                  onClick={() => setState(ExperienceState.CORPORATE_LANDING)}
                   className="relative z-10 px-10 py-3 text-white text-xl font-semibold transition-colors rounded-full"
                 >
                   {language === 'EN' ? 'Corporate' : 'الشركات'}
@@ -195,205 +188,116 @@ const App: React.FC = () => {
               </div>
             </div>
           </motion.div>
-        )}
 
         <AnimatePresence mode="wait">
-          {state === ExperienceState.IDLE_LOOP && (
+          {/* Corporate Landing Screen - Wholesale & SME Banking */}
+          {state === ExperienceState.CORPORATE_LANDING && (
             <motion.div
-              key="idle"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: TIMINGS.TRANSITION_DURATION / 1000 }}
-              className="absolute inset-0 flex flex-col items-center justify-center bg-black"
-              onPointerUp={advance}
-            >
-              <MotionOverlay type="stars" />
-              <motion.div
-                animate={{
-                  scale: [1, 1.05, 1],
-                  opacity: [0.8, 1, 0.8],
-                  y: [0, -10, 0]
-                }}
-                transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-                className="w-[500px]"
-              >
-                <img src="/images/dublogo-lg.svg" alt="Dukhan Bank" className="w-full h-auto" />
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: [0, 0.5, 0] }}
-                transition={{ duration: 3, repeat: Infinity, delay: 1 }}
-                className="absolute inset-0 bg-gradient-to-b from-transparent via-[#3DAE2B]/5 to-transparent"
-              />
-            </motion.div>
-          )}
-
-          {state === ExperienceState.START_SCREEN && (
-            <motion.div
-              key="start"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: TIMINGS.TRANSITION_DURATION / 1000 }}
-              className="absolute inset-0 bg-black"
-            >
-              {/* Stars Background */}
-              <MotionOverlay type="stars" />
-
-              {/* Main Content */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-16 pt-32">
-                {/* Title */}
-                <motion.h1
-                  initial={{ y: 30, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.6, duration: 0.8 }}
-                  className="text-white text-9xl font-bold mb-10 leading-tight"
-                >
-                  {language === 'EN' ? (
-                    <>
-                      Wholesale & SME<br />Banking
-                    </>
-                  ) : (
-                    <>
-                      الخدمات المصرفية للجملة<br />والمؤسسات الصغيرة والمتوسطة
-                    </>
-                  )}
-                </motion.h1>
-
-                {/* Subtitle */}
-                <motion.p
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.9, duration: 0.8 }}
-                  className="text-white/70 text-4xl mb-20 font-light"
-                >
-                  {language === 'EN'
-                    ? 'Experience the future of corporate banking'
-                    : 'اختبر مستقبل الخدمات المصرفية للشركات'}
-                </motion.p>
-
-                {/* Animated Line */}
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: '120px' }}
-                  transition={{ delay: 1.2, duration: 1 }}
-                  className="h-1 bg-gradient-to-r from-transparent via-[#3DAE2B] to-transparent mb-16"
-                />
-
-                {/* Start Experience Button */}
-                <motion.button
-                  initial={{ y: 20, opacity: 0, scale: 0.9 }}
-                  animate={{
-                    y: 0,
-                    opacity: 1,
-                    scale: 1
-                  }}
-                  transition={{ delay: 1.5, duration: 0.8 }}
-                  whileHover={{
-                    scale: 1.05,
-                    boxShadow: '0 0 60px rgba(61, 174, 43, 0.6)'
-                  }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={advance}
-                  className="relative px-40 py-10 bg-gradient-to-r from-[#2d8a1f] via-[#3DAE2B] to-[#2d8a1f] text-white text-5xl font-bold rounded-full shadow-2xl overflow-hidden group"
-                >
-                  {/* Animated gradient overlay on hover */}
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                    animate={{
-                      x: ['-100%', '100%']
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: 'linear'
-                    }}
-                  />
-                  <span className="relative z-10">
-                    {language === 'EN' ? 'Start Experience' : 'ابدأ التجربة'}
-                  </span>
-                </motion.button>
-              </div>
-            </motion.div>
-          )}
-
-          {state === ExperienceState.SECTION_SELECTION && (
-            <motion.div
-              key="section-selection"
+              key="corporate-landing"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: TIMINGS.TRANSITION_DURATION / 1000 }}
               className="absolute inset-0 bg-black overflow-hidden"
             >
-              <MotionOverlay type="stars" />
+              {/* Stars Video Background */}
+              <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="absolute inset-0 w-full h-full object-cover"
+              >
+                <source src="/videos/stars.mp4" type="video/mp4" />
+              </video>
 
-              <div className="relative h-full w-full flex flex-col items-center justify-center p-16 pt-32 gap-16">
-                <motion.h2
-                  initial={{ y: -30, opacity: 0 }}
+              {/* Black Tint Overlay - 40% */}
+              <div className="absolute inset-0 bg-black/40 z-0" />
+
+              {/* Content */}
+              <div className="relative h-full w-full flex flex-col items-center justify-center px-[12%] py-[8%] pt-32 pb-40">
+                <motion.div
+                  initial={{ y: 50, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                  className="text-white text-8xl font-bold text-center"
+                  transition={{ delay: 0.3, duration: 0.8 }}
+                  className="text-center space-y-12"
                 >
-                  {language === 'EN' ? 'Choose Your Journey' : 'اختر رحلتك'}
-                </motion.h2>
+                  {/* Title */}
+                  <h1 className="text-8xl font-bold text-white mb-8">
+                    {language === 'EN' ? 'Wholesale & SME Banking' : 'الخدمات المصرفية للجملة والمؤسسات الصغيرة والمتوسطة'}
+                  </h1>
 
-                <div className="flex gap-16 items-center justify-center">
-                  {/* Retail Button */}
-                  <motion.div
-                    initial={{ opacity: 0, x: -100, scale: 0.8 }}
-                    animate={{ opacity: 1, x: 0, scale: 1 }}
-                    transition={{ delay: 0.5, type: "spring", stiffness: 100 }}
-                    whileHover={{ scale: 1.05, y: -10 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setState(ExperienceState.RETAIL_CARDS)}
-                    className="bg-gradient-to-br from-[#3DAE2B] to-[#2d8a1f] backdrop-blur-xl rounded-3xl p-20 border-4 border-white/30 cursor-pointer shadow-2xl hover:shadow-[0_0_60px_rgba(61,174,43,0.6)] transition-all"
-                  >
-                    <motion.div
-                      animate={{ rotate: [0, 5, 0, -5, 0], y: [0, -10, 0] }}
-                      transition={{ duration: 4, repeat: Infinity }}
-                      className="text-white mb-10 flex justify-center"
-                    >
-                      <UsersIcon size={120} strokeWidth={1.5} />
-                    </motion.div>
-                    <h3 className="text-white text-7xl font-bold text-center">
-                      {language === 'EN' ? 'Retail' : 'التجزئة'}
-                    </h3>
-                  </motion.div>
+                  {/* Subtitle */}
+                  <p className="text-4xl text-white/80 mb-16">
+                    {language === 'EN' ? 'Experience the future of corporate banking' : 'اختبر مستقبل الخدمات المصرفية للشركات'}
+                  </p>
 
-                  {/* Corporate Button */}
-                  <motion.div
-                    initial={{ opacity: 0, x: 100, scale: 0.8 }}
-                    animate={{ opacity: 1, x: 0, scale: 1 }}
-                    transition={{ delay: 0.5, type: "spring", stiffness: 100 }}
-                    whileHover={{ scale: 1.05, y: -10 }}
+                  {/* Start Experience Button */}
+                  <motion.button
+                    whileHover={{ scale: 1.05, boxShadow: "0 0 40px rgba(0, 45, 116, 0.6)" }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setState(ExperienceState.CORPORATE_CARDS)}
-                    className="bg-gradient-to-br from-[#002D74] to-[#001a45] backdrop-blur-xl rounded-3xl p-20 border-4 border-white/30 cursor-pointer shadow-2xl hover:shadow-[0_0_60px_rgba(0,45,116,0.6)] transition-all"
+                    className="px-16 py-8 bg-[#002D74] text-white text-3xl font-bold rounded-full hover:bg-[#003d94] transition-all shadow-2xl border-2 border-white/20"
                   >
-                    <motion.div
-                      animate={{ rotate: [0, -5, 0, 5, 0], y: [0, -10, 0] }}
-                      transition={{ duration: 4, repeat: Infinity }}
-                      className="text-white mb-10 flex justify-center"
-                    >
-                      <Building2 size={120} strokeWidth={1.5} />
-                    </motion.div>
-                    <h3 className="text-white text-7xl font-bold text-center">
-                      {language === 'EN' ? 'Corporate' : 'الشركات'}
-                    </h3>
-                  </motion.div>
-                </div>
+                    {language === 'EN' ? 'Start Experience' : 'ابدأ التجربة'}
+                  </motion.button>
+                </motion.div>
+              </div>
+            </motion.div>
+          )}
 
-                {/* Bottom hint text */}
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 0.4 }}
-                  transition={{ delay: 1.2 }}
-                  className="text-white/40 text-3xl text-center"
+          {/* Retail Landing Screen */}
+          {state === ExperienceState.RETAIL_LANDING && (
+            <motion.div
+              key="retail-landing"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: TIMINGS.TRANSITION_DURATION / 1000 }}
+              className="absolute inset-0 bg-black overflow-hidden"
+            >
+              {/* Stars Video Background */}
+              <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="absolute inset-0 w-full h-full object-cover"
+              >
+                <source src="/videos/stars.mp4" type="video/mp4" />
+              </video>
+
+              {/* Black Tint Overlay - 40% */}
+              <div className="absolute inset-0 bg-black/40 z-0" />
+
+              {/* Content */}
+              <div className="relative h-full w-full flex flex-col items-center justify-center px-[12%] py-[8%] pt-32 pb-40">
+                <motion.div
+                  initial={{ y: 50, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.3, duration: 0.8 }}
+                  className="text-center space-y-12"
                 >
-                  {language === 'EN' ? 'Select your banking category' : 'اختر فئة الخدمات المصرفية'}
-                </motion.p>
+                  {/* Title */}
+                  <h1 className="text-8xl font-bold text-white mb-8">
+                    {language === 'EN' ? 'Retail Banking' : 'الخدمات المصرفية للأفراد'}
+                  </h1>
+
+                  {/* Subtitle */}
+                  <p className="text-4xl text-white/80 mb-16">
+                    {language === 'EN' ? 'Experience the future of personal banking' : 'اختبر مستقبل الخدمات المصرفية الشخصية'}
+                  </p>
+
+                  {/* Start Experience Button */}
+                  <motion.button
+                    whileHover={{ scale: 1.05, boxShadow: "0 0 40px rgba(61, 174, 43, 0.6)" }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setState(ExperienceState.RETAIL_CARDS)}
+                    className="px-16 py-8 bg-[#3DAE2B] text-white text-3xl font-bold rounded-full hover:bg-[#35991f] transition-all shadow-2xl border-2 border-white/20"
+                  >
+                    {language === 'EN' ? 'Start Experience' : 'ابدأ التجربة'}
+                  </motion.button>
+                </motion.div>
               </div>
             </motion.div>
           )}
@@ -408,7 +312,19 @@ const App: React.FC = () => {
               transition={{ duration: TIMINGS.TRANSITION_DURATION / 1000 }}
               className="absolute inset-0 bg-black overflow-hidden"
             >
-              <MotionOverlay type="stars" />
+              {/* Stars Video Background */}
+              <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="absolute inset-0 w-full h-full object-cover"
+              >
+                <source src="/videos/stars.mp4" type="video/mp4" />
+              </video>
+
+              {/* Black Tint Overlay - 40% */}
+              <div className="absolute inset-0 bg-black/40 z-0" />
 
               <div className="relative h-full w-full flex flex-col items-center justify-center px-[12%] py-[8%] pt-32 pb-40">
                 <CardGrid cards={RETAIL_CARDS} onCardClick={(detailState) => setState(detailState)} language={language} />
@@ -425,7 +341,7 @@ const App: React.FC = () => {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => setState(ExperienceState.START_SCREEN)}
+                  onClick={() => setState(ExperienceState.CORPORATE_CARDS)}
                   className="flex items-center gap-3 px-10 py-5 bg-white/10 backdrop-blur-xl rounded-full border border-white/20 text-white text-2xl font-semibold hover:bg-white/20 transition-colors"
                 >
                   {language === 'EN' ? 'Home' : 'الرئيسية'}
@@ -435,7 +351,7 @@ const App: React.FC = () => {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => setState(ExperienceState.SECTION_SELECTION)}
+                  onClick={() => setState(ExperienceState.RETAIL_CARDS)}
                   className="flex items-center gap-3 px-10 py-5 bg-[#3DAE2B] backdrop-blur-xl rounded-full border border-[#3DAE2B] text-white text-2xl font-semibold hover:bg-[#35991f] transition-colors"
                 >
                   {language === 'EN' ? 'Back' : 'رجوع'}
@@ -454,7 +370,19 @@ const App: React.FC = () => {
               transition={{ duration: TIMINGS.TRANSITION_DURATION / 1000 }}
               className="absolute inset-0 bg-black overflow-hidden"
             >
-              <MotionOverlay type="stars" />
+              {/* Stars Video Background */}
+              <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="absolute inset-0 w-full h-full object-cover"
+              >
+                <source src="/videos/stars.mp4" type="video/mp4" />
+              </video>
+
+              {/* Black Tint Overlay - 40% */}
+              <div className="absolute inset-0 bg-black/40 z-0" />
 
               <div className="relative h-full w-full flex flex-col items-center justify-center px-[12%] py-[8%] pt-32 pb-40">
                 <CardGrid cards={CORPORATE_CARDS} onCardClick={(detailState) => setState(detailState)} language={language} />
@@ -471,7 +399,7 @@ const App: React.FC = () => {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => setState(ExperienceState.START_SCREEN)}
+                  onClick={() => setState(ExperienceState.CORPORATE_CARDS)}
                   className="flex items-center gap-3 px-10 py-5 bg-white/10 backdrop-blur-xl rounded-full border border-white/20 text-white text-2xl font-semibold hover:bg-white/20 transition-colors"
                 >
                   {language === 'EN' ? 'Home' : 'الرئيسية'}
@@ -481,7 +409,7 @@ const App: React.FC = () => {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => setState(ExperienceState.SECTION_SELECTION)}
+                  onClick={() => setState(ExperienceState.CORPORATE_CARDS)}
                   className="flex items-center gap-3 px-10 py-5 bg-[#3DAE2B] backdrop-blur-xl rounded-full border border-[#3DAE2B] text-white text-2xl font-semibold hover:bg-[#35991f] transition-colors"
                 >
                   {language === 'EN' ? 'Back' : 'رجوع'}
@@ -501,8 +429,9 @@ const App: React.FC = () => {
               contentDescriptionAr={RETAIL_CARDS[0].contentDescriptionAr!}
               videoPath={RETAIL_CARDS[0].videoPath!}
               onClose={() => setState(ExperienceState.RETAIL_CARDS)}
-              onHome={() => setState(ExperienceState.START_SCREEN)}
+              onHome={() => setState(ExperienceState.CORPORATE_CARDS)}
               language={language}
+              type="retail"
             />
           )}
 
@@ -516,8 +445,9 @@ const App: React.FC = () => {
               contentDescriptionAr={RETAIL_CARDS[1].contentDescriptionAr!}
               videoPath={RETAIL_CARDS[1].videoPath!}
               onClose={() => setState(ExperienceState.RETAIL_CARDS)}
-              onHome={() => setState(ExperienceState.START_SCREEN)}
+              onHome={() => setState(ExperienceState.CORPORATE_CARDS)}
               language={language}
+              type="retail"
             />
           )}
 
@@ -531,8 +461,9 @@ const App: React.FC = () => {
               contentDescriptionAr={RETAIL_CARDS[2].contentDescriptionAr!}
               videoPath={RETAIL_CARDS[2].videoPath!}
               onClose={() => setState(ExperienceState.RETAIL_CARDS)}
-              onHome={() => setState(ExperienceState.START_SCREEN)}
+              onHome={() => setState(ExperienceState.CORPORATE_CARDS)}
               language={language}
+              type="retail"
             />
           )}
 
@@ -546,8 +477,9 @@ const App: React.FC = () => {
               contentDescriptionAr={RETAIL_CARDS[3].contentDescriptionAr!}
               videoPath={RETAIL_CARDS[3].videoPath!}
               onClose={() => setState(ExperienceState.RETAIL_CARDS)}
-              onHome={() => setState(ExperienceState.START_SCREEN)}
+              onHome={() => setState(ExperienceState.CORPORATE_CARDS)}
               language={language}
+              type="retail"
             />
           )}
 
@@ -561,8 +493,9 @@ const App: React.FC = () => {
               contentDescriptionAr={RETAIL_CARDS[4].contentDescriptionAr!}
               videoPath={RETAIL_CARDS[4].videoPath!}
               onClose={() => setState(ExperienceState.RETAIL_CARDS)}
-              onHome={() => setState(ExperienceState.START_SCREEN)}
+              onHome={() => setState(ExperienceState.CORPORATE_CARDS)}
               language={language}
+              type="retail"
             />
           )}
 
@@ -571,7 +504,7 @@ const App: React.FC = () => {
               title="Retail Gaming Zone"
               titleAr="منطقة الألعاب للأفراد"
               onClose={() => setState(ExperienceState.RETAIL_CARDS)}
-              onHome={() => setState(ExperienceState.START_SCREEN)}
+              onHome={() => setState(ExperienceState.CORPORATE_CARDS)}
               language={language}
             />
           )}
@@ -587,8 +520,9 @@ const App: React.FC = () => {
               contentDescriptionAr={CORPORATE_CARDS[0].contentDescriptionAr!}
               videoPath={CORPORATE_CARDS[0].videoPath!}
               onClose={() => setState(ExperienceState.CORPORATE_CARDS)}
-              onHome={() => setState(ExperienceState.START_SCREEN)}
+              onHome={() => setState(ExperienceState.CORPORATE_CARDS)}
               language={language}
+              type="corporate"
             />
           )}
 
@@ -602,8 +536,9 @@ const App: React.FC = () => {
               contentDescriptionAr={CORPORATE_CARDS[1].contentDescriptionAr!}
               videoPath={CORPORATE_CARDS[1].videoPath!}
               onClose={() => setState(ExperienceState.CORPORATE_CARDS)}
-              onHome={() => setState(ExperienceState.START_SCREEN)}
+              onHome={() => setState(ExperienceState.CORPORATE_CARDS)}
               language={language}
+              type="corporate"
             />
           )}
 
@@ -617,8 +552,9 @@ const App: React.FC = () => {
               contentDescriptionAr={CORPORATE_CARDS[2].contentDescriptionAr!}
               videoPath={CORPORATE_CARDS[2].videoPath!}
               onClose={() => setState(ExperienceState.CORPORATE_CARDS)}
-              onHome={() => setState(ExperienceState.START_SCREEN)}
+              onHome={() => setState(ExperienceState.CORPORATE_CARDS)}
               language={language}
+              type="corporate"
             />
           )}
 
@@ -632,8 +568,9 @@ const App: React.FC = () => {
               contentDescriptionAr={CORPORATE_CARDS[3].contentDescriptionAr!}
               videoPath={CORPORATE_CARDS[3].videoPath!}
               onClose={() => setState(ExperienceState.CORPORATE_CARDS)}
-              onHome={() => setState(ExperienceState.START_SCREEN)}
+              onHome={() => setState(ExperienceState.CORPORATE_CARDS)}
               language={language}
+              type="corporate"
             />
           )}
 
@@ -642,7 +579,7 @@ const App: React.FC = () => {
               title="Corporate Challenge"
               titleAr="تحدي الشركات"
               onClose={() => setState(ExperienceState.CORPORATE_CARDS)}
-              onHome={() => setState(ExperienceState.START_SCREEN)}
+              onHome={() => setState(ExperienceState.CORPORATE_CARDS)}
               language={language}
             />
           )}
@@ -659,18 +596,27 @@ const App: React.FC = () => {
               transition={{ duration: TIMINGS.TRANSITION_DURATION / 1000, ease: "anticipate" }}
               className="absolute inset-0 overflow-hidden"
             >
+              {/* Stars Video Background */}
+              <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="absolute inset-0 w-full h-full object-cover"
+              >
+                <source src="/videos/stars.mp4" type="video/mp4" />
+              </video>
+
+              {/* Black Tint Overlay - 40% */}
+              <div className="absolute inset-0 bg-black/40 z-0" />
+
               {/* Background with drift */}
               <motion.div
                 animate={{ scale: 1.15, x: [-30, 30] }}
                 transition={{ duration: 25, repeat: Infinity, repeatType: "reverse", ease: "linear" }}
-                className="absolute inset-0 bg-cover bg-center"
+                className="absolute inset-0 bg-cover bg-center opacity-50"
                 style={{ backgroundImage: `url('${currentChapter.backgroundImage}')` }}
               />
-              {/* Dark Gradient Overlays for Maximum Contrast */}
-              <div className="absolute inset-0 bg-black/70" /> {/* Uniform Dark Tint */}
-              <div className="absolute inset-0 bg-gradient-to-b from-black/95 via-black/60 to-black/95" />
-
-              <MotionOverlay type={currentChapter.overlayType} />
 
               {/* Home Button - Top Left */}
               <motion.button
@@ -692,7 +638,7 @@ const App: React.FC = () => {
                 }}
                 whileHover={{ scale: 1.1, x: -5 }}
                 whileTap={{ scale: 0.9 }}
-                onClick={() => setState(ExperienceState.START_SCREEN)}
+                onClick={() => setState(ExperienceState.CORPORATE_LANDING)}
                 className="absolute top-16 left-16 z-50 px-12 py-6 bg-white/10 backdrop-blur-xl rounded-full border border-white/20 text-white text-3xl font-bold hover:bg-white/20 transition-colors shadow-2xl"
               >
                 ← Home
@@ -812,7 +758,19 @@ const App: React.FC = () => {
               transition={{ duration: TIMINGS.TRANSITION_DURATION / 1000 }}
               className="absolute inset-0 flex flex-col items-center justify-center bg-black text-center px-12"
             >
-              <MotionOverlay type="stars" />
+              {/* Stars Video Background */}
+              <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="absolute inset-0 w-full h-full object-cover"
+              >
+                <source src="/videos/stars.mp4" type="video/mp4" />
+              </video>
+
+              {/* Black Tint Overlay - 40% */}
+              <div className="absolute inset-0 bg-black/40 z-0" />
 
               {/* Home Button - Top Left */}
               <motion.button
@@ -834,7 +792,7 @@ const App: React.FC = () => {
                 }}
                 whileHover={{ scale: 1.1, x: -5 }}
                 whileTap={{ scale: 0.9 }}
-                onClick={() => setState(ExperienceState.START_SCREEN)}
+                onClick={() => setState(ExperienceState.CORPORATE_LANDING)}
                 className="absolute top-16 left-16 z-50 px-12 py-6 bg-white/10 backdrop-blur-xl rounded-full border border-white/20 text-white text-3xl font-bold hover:bg-white/20 transition-colors shadow-2xl"
               >
                 {language === 'EN' ? '← Home' : 'الرئيسية ←'}
@@ -864,7 +822,7 @@ const App: React.FC = () => {
                   boxShadow: "0 0 50px rgba(61, 174, 43, 0.6)"
                 }}
                 whileTap={{ scale: 0.9 }}
-                onClick={() => setState(ExperienceState.IDLE_LOOP)}
+                onClick={() => setState(ExperienceState.CORPORATE_LANDING)}
                 className="absolute top-16 right-16 z-50 px-12 py-6 bg-[#3DAE2B] backdrop-blur-xl rounded-full border border-[#3DAE2B] text-white text-3xl font-bold hover:bg-[#35991f] transition-colors shadow-2xl"
               >
                 {language === 'EN' ? 'Restart ↻' : 'إعادة التشغيل ↻'}
@@ -1036,9 +994,7 @@ const App: React.FC = () => {
             }}
             transition={{ duration: 3, repeat: Infinity }}
           >
-            {state === ExperienceState.IDLE_LOOP
-              ? (language === 'EN' ? "Touch to Start" : "المس للبدء")
-              : (language === 'EN' ? "Swipe to Navigate" : "اسحب للتنقل")}
+            {language === 'EN' ? "Swipe to Navigate" : "اسحب للتنقل"}
           </motion.span>
         </motion.div>
       </div>
