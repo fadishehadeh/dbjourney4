@@ -15,6 +15,7 @@ interface VideoDetailPageProps {
   onHome: () => void;
   language: 'EN' | 'AR';
   type?: 'retail' | 'corporate';
+  isDAwards?: boolean;
 }
 
 const VideoDetailPage: React.FC<VideoDetailPageProps> = ({
@@ -28,7 +29,8 @@ const VideoDetailPage: React.FC<VideoDetailPageProps> = ({
   onClose,
   onHome,
   language,
-  type = 'retail'
+  type = 'retail',
+  isDAwards = false
 }) => {
   const [showVideo, setShowVideo] = React.useState(false);
 
@@ -58,119 +60,111 @@ const VideoDetailPage: React.FC<VideoDetailPageProps> = ({
       <div className="absolute inset-0 bg-black/40 z-0" />
 
       {!showVideo ? (
-        <div className={`relative h-full w-full flex items-center justify-between px-[8%] py-[6%] pt-32 pb-40 gap-12 overflow-hidden ${language === 'AR' ? 'flex-row-reverse text-right' : ''}`}>
-          {/* Content Side */}
-          <div className="flex-1 max-w-3xl">
-            <motion.h1
-              initial={{ y: 30, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="text-white text-6xl font-bold mb-8 leading-tight"
-            >
-              {language === 'EN' ? contentTitle : contentTitleAr}
-            </motion.h1>
+        // New Unified Layout: Title, 2-column text (if long), video + QR at bottom
+        <div className={`relative h-full w-full flex flex-col ${isDAwards ? 'justify-start pt-40' : 'justify-center pt-44'} px-[8%] pb-40 ${language === 'AR' ? 'text-right' : 'text-left'}`}>
+          {/* Title - Full Width, Left Aligned */}
+          <motion.h1
+            initial={{ y: 30, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className={`text-white font-bold leading-tight ${
+              isDAwards ? 'text-4xl mb-6' : 'text-7xl mb-10'
+            }`}
+          >
+            {language === 'EN' ? contentTitle : contentTitleAr}
+          </motion.h1>
 
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.7 }}
-              className="text-white/80 text-3xl leading-relaxed mb-10"
-            >
-              {language === 'EN' ? contentDescription : contentDescriptionAr}
-            </motion.p>
+          {/* Content - 2 columns if text is long, left aligned, larger font */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.7 }}
+            className={`text-white/90 whitespace-pre-line ${
+              isDAwards
+                ? 'text-base leading-snug columns-2 gap-10 mb-8'
+                : (language === 'EN' ? contentDescription : contentDescriptionAr).length > 600
+                  ? 'text-3xl leading-relaxed columns-2 gap-16 mb-12'
+                  : 'text-3xl leading-relaxed max-w-6xl mb-12'
+            }`}
+            style={{
+              direction: language === 'AR' ? 'rtl' : 'ltr'
+            }}
+            dangerouslySetInnerHTML={{
+              __html: (language === 'EN' ? contentDescription : contentDescriptionAr)
+                .replace(/Key Benefits/g, '<strong>Key Benefits</strong>')
+                .replace(/Highlights/g, '<strong>Highlights</strong>')
+                .replace(/المزايا الرئيسية/g, '<strong>المزايا الرئيسية</strong>')
+                .replace(/• /g, '<span style="font-size: 1.2em; margin-right: 0.3em;">•</span> ')
+            }}
+          />
 
-            {/* Key Features Section */}
+          {/* Cards at the bottom - Side by Side */}
+          <div className={`flex gap-6 mt-auto ${language === 'AR' ? 'flex-row-reverse' : ''}`}>
+            {/* Video Demo Card */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.9 }}
-              className="mb-8"
+              className="flex-1 max-w-md"
             >
-              <h2 className={`text-white text-4xl font-bold mb-6 flex items-center gap-3 ${language === 'AR' ? 'flex-row-reverse' : ''}`}>
-                <div className="w-1 h-10 bg-[#3DAE2B]" />
-                {language === 'EN' ? 'Key Features' : 'الميزات الرئيسية'}
-              </h2>
-              <ul className="space-y-4 text-white/70 text-2xl">
-                <li className={`flex items-start gap-4 ${language === 'AR' ? 'flex-row-reverse' : ''}`}>
-                  <div className="w-3 h-3 bg-[#3DAE2B] rounded-full mt-2 flex-shrink-0" />
-                  <span>{language === 'EN' ? 'Instant virtual card creation' : 'إنشاء بطاقة افتراضية فورية'}</span>
-                </li>
-                <li className={`flex items-start gap-4 ${language === 'AR' ? 'flex-row-reverse' : ''}`}>
-                  <div className="w-3 h-3 bg-[#3DAE2B] rounded-full mt-2 flex-shrink-0" />
-                  <span>{language === 'EN' ? 'Real-time transaction monitoring' : 'مراقبة المعاملات في الوقت الفعلي'}</span>
-                </li>
-                <li className={`flex items-start gap-4 ${language === 'AR' ? 'flex-row-reverse' : ''}`}>
-                  <div className="w-3 h-3 bg-[#3DAE2B] rounded-full mt-2 flex-shrink-0" />
-                  <span>{language === 'EN' ? 'Customizable spending limits' : 'حدود إنفاق قابلة للتخصيص'}</span>
-                </li>
-                <li className={`flex items-start gap-4 ${language === 'AR' ? 'flex-row-reverse' : ''}`}>
-                  <div className="w-3 h-3 bg-[#3DAE2B] rounded-full mt-2 flex-shrink-0" />
-                  <span>{language === 'EN' ? 'Multi-currency support' : 'دعم متعدد العملات'}</span>
-                </li>
-              </ul>
-            </motion.div>
-          </div>
-
-          {/* Video Demo Card */}
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.7 }}
-            className="flex-shrink-0 w-[450px]"
-          >
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => setShowVideo(true)}
-              className="w-full bg-gradient-to-br from-[#3DAE2B] to-[#2d8a1f] rounded-3xl p-12 border border-white/10 shadow-2xl overflow-hidden group relative"
-            >
-              {/* Play button icon */}
-              <motion.div
-                animate={{
-                  scale: [1, 1.1, 1],
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-                className="w-32 h-32 mx-auto mb-8 bg-white/10 backdrop-blur-xl rounded-full flex items-center justify-center border border-white/20 group-hover:bg-white/20 transition-colors"
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setShowVideo(true)}
+                className={`w-full bg-gradient-to-br ${
+                  type === 'retail'
+                    ? 'from-[#3DAE2B] to-[#2d8a1f]'
+                    : 'from-[#002D74] to-[#001a45]'
+                } rounded-2xl p-6 border border-white/10 shadow-2xl overflow-hidden group relative`}
               >
-                <Play size={64} className="text-white ml-2" fill="white" />
-              </motion.div>
+                {/* Play button icon */}
+                <motion.div
+                  animate={{
+                    scale: [1, 1.1, 1],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                  className="w-20 h-20 mx-auto mb-4 bg-white/10 backdrop-blur-xl rounded-full flex items-center justify-center border border-white/20 group-hover:bg-white/20 transition-colors"
+                >
+                  <Play size={40} className="text-white ml-1" fill="white" />
+                </motion.div>
 
-              <h3 className="text-white text-3xl font-bold mb-4">
-                {language === 'EN' ? `${title} Demo:` : `عرض توضيحي ${titleAr}:`}
-              </h3>
-              <p className="text-white text-2xl mb-2">
-                {language === 'EN' ? 'Issue cards in seconds' : 'إصدار البطاقات في ثوانٍ'}
-              </p>
-              <p className="text-white/60 text-lg">
-                {language === 'EN' ? 'Interactive demo' : 'عرض توضيحي تفاعلي'}
-              </p>
-            </motion.button>
+                <h3 className="text-white text-xl font-bold mb-2">
+                  {language === 'EN' ? `${title} Demo:` : `عرض توضيحي ${titleAr}:`}
+                </h3>
+                <p className="text-white text-lg mb-1">
+                  {language === 'EN' ? 'Watch Interactive Demo' : 'شاهد العرض التوضيحي التفاعلي'}
+                </p>
+                <p className="text-white/60 text-sm">
+                  {language === 'EN' ? 'Click to play' : 'انقر للتشغيل'}
+                </p>
+              </motion.button>
+            </motion.div>
 
-            {/* QR Code Placeholder */}
+            {/* QR Code Card */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.0 }}
-              className="mt-8 bg-white/5 backdrop-blur-xl rounded-2xl p-8 border border-white/10"
+              className="flex-1 max-w-md bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 flex items-center justify-center"
             >
               <div className="flex flex-col items-center">
                 {/* QR Code Icon Placeholder */}
                 <div
-                  className="w-40 h-40 rounded-xl flex items-center justify-center border-4"
+                  className="w-32 h-32 rounded-xl flex items-center justify-center border-4"
                   style={{
                     backgroundColor: 'white',
                     borderColor: qrColor
                   }}
                 >
-                  <QrCode size={120} style={{ color: qrColor }} />
+                  <QrCode size={96} style={{ color: qrColor }} />
                 </div>
               </div>
             </motion.div>
-          </motion.div>
+          </div>
         </div>
       ) : (
         <motion.div

@@ -6,34 +6,88 @@ interface CardGridProps {
   cards: CardData[];
   onCardClick: (detailState: any) => void;
   language: 'EN' | 'AR';
+  type?: 'retail' | 'corporate';
 }
 
-const CardGrid: React.FC<CardGridProps> = ({ cards, onCardClick, language }) => {
+const CardGrid: React.FC<CardGridProps> = ({ cards, onCardClick, language, type = 'retail' }) => {
   const [hoveredCard, setHoveredCard] = React.useState<number | null>(null);
+
+  // Determine hover color based on type
+  const hoverColor = type === 'retail' ? '#3DAE2B' : '#002D74';
+  const hoverColorRgba = type === 'retail' ? 'rgba(61, 174, 43, 0.3)' : 'rgba(0, 45, 116, 0.3)';
+
+  // For Arabic: switch left and right columns
+  const displayCards = language === 'AR'
+    ? cards.map((card, idx) => {
+        // If even index (left column), move to odd position (right column) and vice versa
+        const isLeftColumn = idx % 2 === 0;
+        return isLeftColumn ? cards[idx + 1] || card : cards[idx - 1] || card;
+      })
+    : cards;
 
   return (
     <div className="grid grid-cols-2 gap-5 max-w-5xl">
-      {cards.map((card, idx) => (
+      {displayCards.map((card, idx) => (
         <motion.div
           key={card.id}
           initial={{ opacity: 0, scale: 0.8, y: 50 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ delay: 0.5 + idx * 0.1, type: "spring", stiffness: 100 }}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
+          animate={{
+            opacity: 1,
+            scale: 1,
+            y: 0,
+            backgroundColor: hoveredCard === card.id ? hoverColor : '#1a1a1a'
+          }}
+          transition={{
+            delay: 0.5 + idx * 0.1,
+            type: "spring",
+            stiffness: 100,
+            backgroundColor: { duration: 0.3 }
+          }}
+          whileHover={{ scale: 1.08, y: -10 }}
+          whileTap={{ scale: 0.95 }}
           onClick={() => onCardClick(card.detailState)}
           onHoverStart={() => setHoveredCard(card.id)}
           onHoverEnd={() => setHoveredCard(null)}
-          className="relative bg-[#1a1a1a] backdrop-blur-xl rounded-3xl p-8 border border-white/10 cursor-pointer shadow-2xl overflow-hidden"
+          className="relative backdrop-blur-xl rounded-3xl p-8 border border-white/10 cursor-pointer shadow-2xl overflow-hidden group"
         >
-          {/* Subtle gradient overlay on hover */}
+          {/* Animated border glow on hover */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{
-              opacity: hoveredCard === card.id ? 0.15 : 0,
+              opacity: hoveredCard === card.id ? 1 : 0,
             }}
             transition={{ duration: 0.3 }}
-            className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-3xl"
+            className="absolute inset-0 rounded-3xl pointer-events-none"
+            style={{
+              boxShadow: `0 0 40px ${hoverColorRgba}, inset 0 0 40px ${hoverColorRgba}`
+            }}
+          />
+
+          {/* Radial rays on hover */}
+          <motion.div
+            className="absolute inset-0 opacity-0 group-hover:opacity-100 pointer-events-none"
+            initial={{ opacity: 0, rotate: 0 }}
+            animate={{
+              opacity: hoveredCard === card.id ? 0.2 : 0,
+              rotate: hoveredCard === card.id ? 360 : 0,
+            }}
+            transition={{
+              opacity: { duration: 0.3 },
+              rotate: { duration: 20, repeat: Infinity, ease: "linear" }
+            }}
+            style={{
+              background: `
+                repeating-conic-gradient(
+                  from 0deg,
+                  transparent 0deg,
+                  transparent 8deg,
+                  rgba(255, 255, 255, 0.1) 8deg,
+                  rgba(255, 255, 255, 0.1) 10deg,
+                  transparent 10deg,
+                  transparent 18deg
+                )
+              `,
+            }}
           />
 
           {/* Icon with dark background */}
@@ -56,29 +110,9 @@ const CardGrid: React.FC<CardGridProps> = ({ cards, onCardClick, language }) => 
           </div>
 
           {/* Title */}
-          <h3 className="relative z-10 text-white text-4xl font-bold text-center mb-5">
+          <h3 className="relative z-10 text-white text-4xl font-bold text-center">
             {language === 'EN' ? card.title : card.titleAr}
           </h3>
-
-          {/* Description */}
-          {card.contentDescription && (
-            <p className="relative z-10 text-white/60 text-xl text-center leading-relaxed mb-5 px-2">
-              {language === 'EN'
-                ? card.contentDescription.split('.')[0]
-                : card.contentDescriptionAr?.split('.')[0]}
-            </p>
-          )}
-
-          {/* "Learn more" text */}
-          <motion.p
-            animate={{
-              opacity: hoveredCard === card.id ? 0.8 : 0.5,
-            }}
-            transition={{ duration: 0.3 }}
-            className="relative z-10 text-white/50 text-lg text-center"
-          >
-            {language === 'EN' ? 'Learn more →' : 'اعرف المزيد ←'}
-          </motion.p>
         </motion.div>
       ))}
     </div>

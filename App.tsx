@@ -234,12 +234,151 @@ const App: React.FC = () => {
 
                   {/* Start Experience Button */}
                   <motion.button
-                    whileHover={{ scale: 1.05, boxShadow: "0 0 40px rgba(0, 45, 116, 0.6)" }}
-                    whileTap={{ scale: 0.95 }}
+                    animate={{
+                      scale: [1, 1.02, 1],
+                      boxShadow: [
+                        "0 0 20px rgba(0, 45, 116, 0.4)",
+                        "0 0 40px rgba(0, 45, 116, 0.6)",
+                        "0 0 20px rgba(0, 45, 116, 0.4)"
+                      ]
+                    }}
+                    transition={{
+                      scale: { duration: 2, repeat: Infinity, ease: "easeInOut" },
+                      boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+                    }}
+                    whileHover={{
+                      scale: 1.08,
+                      transition: { duration: 0.3 }
+                    }}
+                    whileTap={{
+                      scale: 0.92,
+                      transition: { duration: 0.1 }
+                    }}
                     onClick={() => setState(ExperienceState.CORPORATE_CARDS)}
-                    className="px-16 py-8 bg-[#002D74] text-white text-3xl font-bold rounded-full hover:bg-[#003d94] transition-all shadow-2xl border-2 border-white/20"
+                    className="relative px-16 py-8 text-white text-3xl font-bold rounded-full transition-all shadow-2xl border-2 border-white/20 overflow-hidden group"
                   >
-                    {language === 'EN' ? 'Start Experience' : 'ابدأ التجربة'}
+                    {/* Animated gradient background */}
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-[#002D74] via-[#0047b3] to-[#002D74]"
+                      animate={{
+                        backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "linear"
+                      }}
+                      style={{
+                        backgroundSize: '200% 100%',
+                      }}
+                    />
+
+                    {/* Pulsing overlay */}
+                    <motion.div
+                      className="absolute inset-0 bg-white"
+                      animate={{
+                        opacity: [0.1, 0.25, 0.1],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    />
+
+                    {/* Animated lines - horizontal */}
+                    <motion.div
+                      className="absolute inset-0"
+                      animate={{
+                        backgroundPosition: ['0px 0px', '100px 0px'],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "linear"
+                      }}
+                      style={{
+                        backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 10px, rgba(255,255,255,0.1) 10px, rgba(255,255,255,0.1) 20px)',
+                        backgroundSize: '100px 100%',
+                      }}
+                    />
+
+                    {/* Animated lines - diagonal */}
+                    <motion.div
+                      className="absolute inset-0"
+                      animate={{
+                        backgroundPosition: ['0px 0px', '60px 60px'],
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "linear"
+                      }}
+                      style={{
+                        backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 15px, rgba(255,255,255,0.05) 15px, rgba(255,255,255,0.05) 30px)',
+                        backgroundSize: '60px 60px',
+                      }}
+                    />
+
+                    {/* Radiant rays - always rotating */}
+                    <motion.div
+                      className="absolute inset-0"
+                      animate={{
+                        rotate: 360,
+                        opacity: [0.2, 0.4, 0.2]
+                      }}
+                      transition={{
+                        rotate: { duration: 15, repeat: Infinity, ease: "linear" },
+                        opacity: { duration: 3, repeat: Infinity, ease: "easeInOut" }
+                      }}
+                      style={{
+                        background: `
+                          repeating-conic-gradient(
+                            from 0deg,
+                            transparent 0deg,
+                            transparent 5deg,
+                            rgba(255, 255, 255, 0.1) 5deg,
+                            rgba(255, 255, 255, 0.1) 7deg,
+                            transparent 7deg,
+                            transparent 12deg
+                          )
+                        `,
+                      }}
+                    />
+
+                    {/* Burst rays on click */}
+                    <motion.div
+                      className="absolute inset-0"
+                      initial={{ scale: 0, opacity: 0 }}
+                      whileTap={{
+                        scale: [0, 1.5],
+                        opacity: [0.8, 0],
+                        transition: { duration: 0.5 }
+                      }}
+                      style={{
+                        background: `
+                          repeating-conic-gradient(
+                            from 0deg,
+                            transparent 0deg,
+                            transparent 8deg,
+                            rgba(255, 255, 255, 0.5) 8deg,
+                            rgba(255, 255, 255, 0.5) 10deg,
+                            transparent 10deg,
+                            transparent 18deg
+                          )
+                        `,
+                      }}
+                    />
+
+                    {/* Shine effect on hover */}
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                      initial={{ x: '-100%' }}
+                      whileHover={{ x: '100%' }}
+                      transition={{ duration: 0.6 }}
+                    />
+
+                    <span className="relative z-10">{language === 'EN' ? 'Start Experience' : 'ابدأ التجربة'}</span>
                   </motion.button>
                 </motion.div>
               </div>
@@ -290,12 +429,151 @@ const App: React.FC = () => {
 
                   {/* Start Experience Button */}
                   <motion.button
-                    whileHover={{ scale: 1.05, boxShadow: "0 0 40px rgba(61, 174, 43, 0.6)" }}
-                    whileTap={{ scale: 0.95 }}
+                    animate={{
+                      scale: [1, 1.02, 1],
+                      boxShadow: [
+                        "0 0 20px rgba(61, 174, 43, 0.4)",
+                        "0 0 40px rgba(61, 174, 43, 0.6)",
+                        "0 0 20px rgba(61, 174, 43, 0.4)"
+                      ]
+                    }}
+                    transition={{
+                      scale: { duration: 2, repeat: Infinity, ease: "easeInOut" },
+                      boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+                    }}
+                    whileHover={{
+                      scale: 1.08,
+                      transition: { duration: 0.3 }
+                    }}
+                    whileTap={{
+                      scale: 0.92,
+                      transition: { duration: 0.1 }
+                    }}
                     onClick={() => setState(ExperienceState.RETAIL_CARDS)}
-                    className="px-16 py-8 bg-[#3DAE2B] text-white text-3xl font-bold rounded-full hover:bg-[#35991f] transition-all shadow-2xl border-2 border-white/20"
+                    className="relative px-16 py-8 text-white text-3xl font-bold rounded-full transition-all shadow-2xl border-2 border-white/20 overflow-hidden group"
                   >
-                    {language === 'EN' ? 'Start Experience' : 'ابدأ التجربة'}
+                    {/* Animated gradient background */}
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-[#3DAE2B] via-[#4dd63a] to-[#3DAE2B]"
+                      animate={{
+                        backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "linear"
+                      }}
+                      style={{
+                        backgroundSize: '200% 100%',
+                      }}
+                    />
+
+                    {/* Pulsing overlay */}
+                    <motion.div
+                      className="absolute inset-0 bg-white"
+                      animate={{
+                        opacity: [0.1, 0.25, 0.1],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    />
+
+                    {/* Animated lines - horizontal */}
+                    <motion.div
+                      className="absolute inset-0"
+                      animate={{
+                        backgroundPosition: ['0px 0px', '100px 0px'],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "linear"
+                      }}
+                      style={{
+                        backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 10px, rgba(255,255,255,0.1) 10px, rgba(255,255,255,0.1) 20px)',
+                        backgroundSize: '100px 100%',
+                      }}
+                    />
+
+                    {/* Animated lines - diagonal */}
+                    <motion.div
+                      className="absolute inset-0"
+                      animate={{
+                        backgroundPosition: ['0px 0px', '60px 60px'],
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "linear"
+                      }}
+                      style={{
+                        backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 15px, rgba(255,255,255,0.05) 15px, rgba(255,255,255,0.05) 30px)',
+                        backgroundSize: '60px 60px',
+                      }}
+                    />
+
+                    {/* Radiant rays - always rotating */}
+                    <motion.div
+                      className="absolute inset-0"
+                      animate={{
+                        rotate: 360,
+                        opacity: [0.2, 0.4, 0.2]
+                      }}
+                      transition={{
+                        rotate: { duration: 15, repeat: Infinity, ease: "linear" },
+                        opacity: { duration: 3, repeat: Infinity, ease: "easeInOut" }
+                      }}
+                      style={{
+                        background: `
+                          repeating-conic-gradient(
+                            from 0deg,
+                            transparent 0deg,
+                            transparent 5deg,
+                            rgba(255, 255, 255, 0.1) 5deg,
+                            rgba(255, 255, 255, 0.1) 7deg,
+                            transparent 7deg,
+                            transparent 12deg
+                          )
+                        `,
+                      }}
+                    />
+
+                    {/* Burst rays on click */}
+                    <motion.div
+                      className="absolute inset-0"
+                      initial={{ scale: 0, opacity: 0 }}
+                      whileTap={{
+                        scale: [0, 1.5],
+                        opacity: [0.8, 0],
+                        transition: { duration: 0.5 }
+                      }}
+                      style={{
+                        background: `
+                          repeating-conic-gradient(
+                            from 0deg,
+                            transparent 0deg,
+                            transparent 8deg,
+                            rgba(255, 255, 255, 0.5) 8deg,
+                            rgba(255, 255, 255, 0.5) 10deg,
+                            transparent 10deg,
+                            transparent 18deg
+                          )
+                        `,
+                      }}
+                    />
+
+                    {/* Shine effect on hover */}
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                      initial={{ x: '-100%' }}
+                      whileHover={{ x: '100%' }}
+                      transition={{ duration: 0.6 }}
+                    />
+
+                    <span className="relative z-10">{language === 'EN' ? 'Start Experience' : 'ابدأ التجربة'}</span>
                   </motion.button>
                 </motion.div>
               </div>
@@ -327,7 +605,7 @@ const App: React.FC = () => {
               <div className="absolute inset-0 bg-black/40 z-0" />
 
               <div className="relative h-full w-full flex flex-col items-center justify-center px-[12%] py-[8%] pt-32 pb-40">
-                <CardGrid cards={RETAIL_CARDS} onCardClick={(detailState) => setState(detailState)} language={language} />
+                <CardGrid cards={RETAIL_CARDS} onCardClick={(detailState) => setState(detailState)} language={language} type="retail" />
               </div>
 
               {/* Sticky Footer */}
@@ -385,7 +663,7 @@ const App: React.FC = () => {
               <div className="absolute inset-0 bg-black/40 z-0" />
 
               <div className="relative h-full w-full flex flex-col items-center justify-center px-[12%] py-[8%] pt-32 pb-40">
-                <CardGrid cards={CORPORATE_CARDS} onCardClick={(detailState) => setState(detailState)} language={language} />
+                <CardGrid cards={CORPORATE_CARDS} onCardClick={(detailState) => setState(detailState)} language={language} type="corporate" />
               </div>
 
               {/* Sticky Footer */}
@@ -419,7 +697,7 @@ const App: React.FC = () => {
           )}
 
           {/* Retail Detail Pages */}
-          {state === ExperienceState.RETAIL_MOBILE_APP && (
+          {state === ExperienceState.RETAIL_INSTANT_FINANCE && (
             <VideoDetailPage
               title={RETAIL_CARDS[0].title}
               titleAr={RETAIL_CARDS[0].titleAr}
@@ -435,7 +713,7 @@ const App: React.FC = () => {
             />
           )}
 
-          {state === ExperienceState.RETAIL_INSTANT_FINANCE && (
+          {state === ExperienceState.RETAIL_INSTANT_PREPAID && (
             <VideoDetailPage
               title={RETAIL_CARDS[1].title}
               titleAr={RETAIL_CARDS[1].titleAr}
@@ -451,7 +729,7 @@ const App: React.FC = () => {
             />
           )}
 
-          {state === ExperienceState.RETAIL_INSTANT_PREPAID && (
+          {state === ExperienceState.RETAIL_CARD_OFFERS && (
             <VideoDetailPage
               title={RETAIL_CARDS[2].title}
               titleAr={RETAIL_CARDS[2].titleAr}
@@ -464,10 +742,11 @@ const App: React.FC = () => {
               onHome={() => setState(ExperienceState.CORPORATE_CARDS)}
               language={language}
               type="retail"
+              isDAwards={true}
             />
           )}
 
-          {state === ExperienceState.RETAIL_CARD_OFFERS && (
+          {state === ExperienceState.RETAIL_DAWARDS && (
             <VideoDetailPage
               title={RETAIL_CARDS[3].title}
               titleAr={RETAIL_CARDS[3].titleAr}
@@ -476,22 +755,6 @@ const App: React.FC = () => {
               contentDescription={RETAIL_CARDS[3].contentDescription!}
               contentDescriptionAr={RETAIL_CARDS[3].contentDescriptionAr!}
               videoPath={RETAIL_CARDS[3].videoPath!}
-              onClose={() => setState(ExperienceState.RETAIL_CARDS)}
-              onHome={() => setState(ExperienceState.CORPORATE_CARDS)}
-              language={language}
-              type="retail"
-            />
-          )}
-
-          {state === ExperienceState.RETAIL_DAWARDS && (
-            <VideoDetailPage
-              title={RETAIL_CARDS[4].title}
-              titleAr={RETAIL_CARDS[4].titleAr}
-              contentTitle={RETAIL_CARDS[4].contentTitle!}
-              contentTitleAr={RETAIL_CARDS[4].contentTitleAr!}
-              contentDescription={RETAIL_CARDS[4].contentDescription!}
-              contentDescriptionAr={RETAIL_CARDS[4].contentDescriptionAr!}
-              videoPath={RETAIL_CARDS[4].videoPath!}
               onClose={() => setState(ExperienceState.RETAIL_CARDS)}
               onHome={() => setState(ExperienceState.CORPORATE_CARDS)}
               language={language}
@@ -567,6 +830,22 @@ const App: React.FC = () => {
               contentDescription={CORPORATE_CARDS[3].contentDescription!}
               contentDescriptionAr={CORPORATE_CARDS[3].contentDescriptionAr!}
               videoPath={CORPORATE_CARDS[3].videoPath!}
+              onClose={() => setState(ExperienceState.CORPORATE_CARDS)}
+              onHome={() => setState(ExperienceState.CORPORATE_CARDS)}
+              language={language}
+              type="corporate"
+            />
+          )}
+
+          {state === ExperienceState.CORPORATE_DTAP && (
+            <VideoDetailPage
+              title={CORPORATE_CARDS[4].title}
+              titleAr={CORPORATE_CARDS[4].titleAr}
+              contentTitle={CORPORATE_CARDS[4].contentTitle!}
+              contentTitleAr={CORPORATE_CARDS[4].contentTitleAr!}
+              contentDescription={CORPORATE_CARDS[4].contentDescription!}
+              contentDescriptionAr={CORPORATE_CARDS[4].contentDescriptionAr!}
+              videoPath={CORPORATE_CARDS[4].videoPath!}
               onClose={() => setState(ExperienceState.CORPORATE_CARDS)}
               onHome={() => setState(ExperienceState.CORPORATE_CARDS)}
               language={language}
