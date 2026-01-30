@@ -11,9 +11,8 @@ interface GamePageProps {
 }
 
 const GamePage: React.FC<GamePageProps> = ({ title, titleAr, onClose, onHome, language }) => {
-  const handleGameClick = (gameName: string) => {
-    console.log(`Starting ${gameName}`);
-    // TODO: Implement game logic
+  const handleGameClick = (gameUrl: string) => {
+    window.open(gameUrl, '_blank');
   };
 
   return (
@@ -72,7 +71,7 @@ const GamePage: React.FC<GamePageProps> = ({ title, titleAr, onClose, onHome, la
           transition={{ delay: 0.9, type: "spring" }}
           className="bg-white p-12 rounded-3xl mb-16 shadow-2xl border-4 border-[#3DAE2B]"
         >
-          <QrCode size={220} className="text-[#3DAE2B]" strokeWidth={1.5} />
+          <img src="/images/qrcode.svg" alt="QR Code" className="w-[220px] h-[220px] object-contain" />
           <p className="text-[#3DAE2B] text-2xl mt-6 font-bold">
             {language === 'EN' ? 'Game QR' : 'رمز QR للعبة'}
           </p>
@@ -95,7 +94,7 @@ const GamePage: React.FC<GamePageProps> = ({ title, titleAr, onClose, onHome, la
               boxShadow: "0 0 60px rgba(61, 174, 43, 0.6)"
             }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => handleGameClick('Arrow & Locker')}
+            onClick={() => handleGameClick('https://grey-qatar.com/db/game/')}
             className="flex-1 bg-gradient-to-br from-[#3DAE2B] to-[#2d8a22] text-white rounded-3xl p-12 shadow-2xl border-4 border-[#3DAE2B]/50 hover:border-[#3DAE2B] transition-all"
           >
             <div className="flex flex-col items-center gap-6">
@@ -141,7 +140,7 @@ const GamePage: React.FC<GamePageProps> = ({ title, titleAr, onClose, onHome, la
               boxShadow: "0 0 60px rgba(61, 174, 43, 0.6)"
             }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => handleGameClick('Puzzle')}
+            onClick={() => handleGameClick('https://www.dukhanbank.com/sites/default/files/2025/games/puzzleslide/index.html')}
             className="flex-1 bg-gradient-to-br from-[#3DAE2B] to-[#2d8a22] text-white rounded-3xl p-12 shadow-2xl border-4 border-[#3DAE2B]/50 hover:border-[#3DAE2B] transition-all"
           >
             <div className="flex flex-col items-center gap-6">

@@ -81,13 +81,14 @@ const VideoDetailPage: React.FC<VideoDetailPageProps> = ({
             transition={{ delay: 0.7 }}
             className={`text-white/90 whitespace-pre-line ${
               isDAwards
-                ? 'text-base leading-snug columns-2 gap-10 mb-8'
+                ? 'leading-snug columns-2 gap-10 mb-8'
                 : (language === 'EN' ? contentDescription : contentDescriptionAr).length > 600
                   ? 'text-3xl leading-relaxed columns-2 gap-16 mb-12'
                   : 'text-3xl leading-relaxed max-w-6xl mb-12'
             }`}
             style={{
-              direction: language === 'AR' ? 'rtl' : 'ltr'
+              direction: language === 'AR' ? 'rtl' : 'ltr',
+              fontSize: isDAwards ? '24px' : undefined
             }}
             dangerouslySetInnerHTML={{
               __html: (language === 'EN' ? contentDescription : contentDescriptionAr)
@@ -152,15 +153,15 @@ const VideoDetailPage: React.FC<VideoDetailPageProps> = ({
               className="flex-1 max-w-md bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 flex items-center justify-center"
             >
               <div className="flex flex-col items-center">
-                {/* QR Code Icon Placeholder */}
+                {/* QR Code SVG Image */}
                 <div
-                  className="w-32 h-32 rounded-xl flex items-center justify-center border-4"
+                  className="w-32 h-32 rounded-xl flex items-center justify-center border-4 p-2"
                   style={{
                     backgroundColor: 'white',
                     borderColor: qrColor
                   }}
                 >
-                  <QrCode size={96} style={{ color: qrColor }} />
+                  <img src="/images/qrcode.svg" alt="QR Code" className="w-full h-full object-contain" />
                 </div>
               </div>
             </motion.div>

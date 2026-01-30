@@ -12,9 +12,9 @@ interface CardGridProps {
 const CardGrid: React.FC<CardGridProps> = ({ cards, onCardClick, language, type = 'retail' }) => {
   const [hoveredCard, setHoveredCard] = React.useState<number | null>(null);
 
-  // Determine hover color based on type
-  const hoverColor = type === 'retail' ? '#3DAE2B' : '#002D74';
-  const hoverColorRgba = type === 'retail' ? 'rgba(61, 174, 43, 0.3)' : 'rgba(0, 45, 116, 0.3)';
+  // All cards stay dark grey - no color change on hover
+  const hoverColor = '#1a1a1a'; // Same dark grey as default
+  const hoverColorRgba = 'rgba(26, 26, 26, 0.3)'; // Dark grey with transparency
 
   // For Arabic: switch left and right columns
   const displayCards = language === 'AR'
