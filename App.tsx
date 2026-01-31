@@ -8,6 +8,7 @@ import AssetPreloader from './components/AssetPreloader';
 import CardGrid from './components/CardGrid';
 import VideoDetailPage from './components/VideoDetailPage';
 import GamePage from './components/GamePage';
+import InstallButton from './components/InstallButton';
 
 const App: React.FC = () => {
   const [state, setState] = useState<ExperienceState>(ExperienceState.CORPORATE_LANDING);
@@ -1276,6 +1277,9 @@ const App: React.FC = () => {
             {language === 'EN' ? "Swipe to Navigate" : "اسحب للتنقل"}
           </motion.span>
         </motion.div>
+
+        {/* Install Button for PWA */}
+        <InstallButton language={language} />
       </div>
     </AssetPreloader>
   );
