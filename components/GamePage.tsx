@@ -11,9 +11,80 @@ interface GamePageProps {
 }
 
 const GamePage: React.FC<GamePageProps> = ({ title, titleAr, onClose, onHome, language }) => {
+  const [selectedGame, setSelectedGame] = React.useState<string | null>(null);
+
   const handleGameClick = (gameUrl: string) => {
-    window.open(gameUrl, '_blank');
+    setSelectedGame(gameUrl);
   };
+
+  const handleCloseGame = () => {
+    setSelectedGame(null);
+  };
+
+  // If a game is selected, show it in iframe (80% size, centered)
+  if (selectedGame) {
+    return (
+      <motion.div
+        key="game-iframe"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.3 }}
+        className="absolute inset-0 bg-black flex items-center justify-center"
+      >
+        {/* Stars Video Background */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+        >
+          <source src="/videos/stars.mp4" type="video/mp4" />
+        </video>
+
+        {/* Black Tint Overlay */}
+        <div className="absolute inset-0 bg-black/40 z-0" />
+
+        {/* Game iframe container - 80% size, centered */}
+        <div className="relative w-[80%] h-[80%] z-10">
+          <iframe
+            src={selectedGame}
+            className="w-full h-full border-0 rounded-2xl shadow-2xl"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            title="Game"
+          />
+        </div>
+
+        {/* Close button overlay - moved down */}
+        <motion.button
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={handleCloseGame}
+          className="absolute top-24 right-8 z-50 w-16 h-16 bg-red-600/90 backdrop-blur-xl rounded-full border-2 border-white/20 text-white hover:bg-red-700 transition-colors flex items-center justify-center shadow-2xl"
+        >
+          <span className="text-3xl font-bold">×</span>
+        </motion.button>
+
+        {/* Back to Games button */}
+        <motion.button
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={handleCloseGame}
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-50 px-8 py-4 bg-white/10 backdrop-blur-xl rounded-full border border-white/20 text-white text-xl font-semibold hover:bg-white/20 transition-colors"
+        >
+          {language === 'EN' ? 'Back to Games' : 'العودة إلى الألعاب'}
+        </motion.button>
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div
