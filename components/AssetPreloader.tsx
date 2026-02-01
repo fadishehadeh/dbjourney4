@@ -15,7 +15,14 @@ const AssetPreloader: React.FC<AssetPreloaderProps> = ({ children }) => {
     let loadedCount = 0;
     const total = images.length;
 
+    // Force load after 3 seconds to prevent infinite loading
+    const forceLoadTimeout = setTimeout(() => {
+      console.log('Force loading app after timeout');
+      setLoaded(true);
+    }, 3000);
+
     if (total === 0) {
+      clearTimeout(forceLoadTimeout);
       setLoaded(true);
       return;
     }
@@ -25,15 +32,23 @@ const AssetPreloader: React.FC<AssetPreloaderProps> = ({ children }) => {
       img.src = src;
       img.onload = () => {
         loadedCount++;
-        if (loadedCount === total) setLoaded(true);
+        if (loadedCount === total) {
+          clearTimeout(forceLoadTimeout);
+          setLoaded(true);
+        }
       };
       img.onerror = () => {
         // Handle error by counting it as loaded to prevent infinite loading
         loadedCount++;
         console.warn(`Failed to load image: ${src}`);
-        if (loadedCount === total) setLoaded(true);
+        if (loadedCount === total) {
+          clearTimeout(forceLoadTimeout);
+          setLoaded(true);
+        }
       };
     });
+
+    return () => clearTimeout(forceLoadTimeout);
   }, []);
 
   if (!loaded) {
