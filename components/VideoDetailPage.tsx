@@ -10,7 +10,7 @@ interface VideoDetailPageProps {
   contentTitleAr: string;
   contentDescription: string;
   contentDescriptionAr: string;
-  videoPath: string;
+  videoPath?: string;
   onClose: () => void;
   onHome: () => void;
   language: 'EN' | 'AR';
@@ -101,56 +101,58 @@ const VideoDetailPage: React.FC<VideoDetailPageProps> = ({
 
           {/* Cards at the bottom - Side by Side */}
           <div className={`flex gap-6 mt-auto ${language === 'AR' ? 'flex-row-reverse' : ''}`}>
-            {/* Video Demo Card */}
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.9 }}
-              className="flex-1 max-w-md"
-            >
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => setShowVideo(true)}
-                className={`w-full bg-gradient-to-br ${
-                  type === 'retail'
-                    ? 'from-[#3DAE2B] to-[#2d8a1f]'
-                    : 'from-[#002D74] to-[#001a45]'
-                } rounded-2xl p-6 border border-white/10 shadow-2xl overflow-hidden group relative`}
+            {/* Video Demo Card - Only show if videoPath is provided */}
+            {videoPath && (
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.9 }}
+                className="flex-1 max-w-md"
               >
-                {/* Play button icon */}
-                <motion.div
-                  animate={{
-                    scale: [1, 1.1, 1],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                  className="w-20 h-20 mx-auto mb-4 bg-white/10 backdrop-blur-xl rounded-full flex items-center justify-center border border-white/20 group-hover:bg-white/20 transition-colors"
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setShowVideo(true)}
+                  className={`w-full bg-gradient-to-br ${
+                    type === 'retail'
+                      ? 'from-[#3DAE2B] to-[#2d8a1f]'
+                      : 'from-[#002D74] to-[#001a45]'
+                  } rounded-2xl p-6 border border-white/10 shadow-2xl overflow-hidden group relative`}
                 >
-                  <Play size={40} className="text-white ml-1" fill="white" />
-                </motion.div>
+                  {/* Play button icon */}
+                  <motion.div
+                    animate={{
+                      scale: [1, 1.1, 1],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                    className="w-20 h-20 mx-auto mb-4 bg-white/10 backdrop-blur-xl rounded-full flex items-center justify-center border border-white/20 group-hover:bg-white/20 transition-colors"
+                  >
+                    <Play size={40} className="text-white ml-1" fill="white" />
+                  </motion.div>
 
-                <h3 className="text-white text-xl font-bold mb-2">
-                  {language === 'EN' ? `${title} Demo:` : `عرض توضيحي ${titleAr}:`}
-                </h3>
-                <p className="text-white text-lg mb-1">
-                  {language === 'EN' ? 'Watch Interactive Demo' : 'شاهد العرض التوضيحي التفاعلي'}
-                </p>
-                <p className="text-white/60 text-sm">
-                  {language === 'EN' ? 'Click to play' : 'انقر للتشغيل'}
-                </p>
-              </motion.button>
-            </motion.div>
+                  <h3 className="text-white text-xl font-bold mb-2">
+                    {language === 'EN' ? `${title} Demo:` : `عرض توضيحي ${titleAr}:`}
+                  </h3>
+                  <p className="text-white text-lg mb-1">
+                    {language === 'EN' ? 'Watch Interactive Demo' : 'شاهد العرض التوضيحي التفاعلي'}
+                  </p>
+                  <p className="text-white/60 text-sm">
+                    {language === 'EN' ? 'Click to play' : 'انقر للتشغيل'}
+                  </p>
+                </motion.button>
+              </motion.div>
+            )}
 
             {/* QR Code Card */}
             <motion.div
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.0 }}
-              className="flex-1 max-w-md bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 flex items-center justify-center"
+              className={`${videoPath ? 'flex-1 max-w-md' : 'w-full max-w-md mx-auto'} bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 flex items-center justify-center`}
             >
               <div className="flex flex-col items-center">
                 {/* QR Code SVG Image */}
@@ -182,7 +184,8 @@ const VideoDetailPage: React.FC<VideoDetailPageProps> = ({
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => setShowVideo(false)}
-            className="absolute top-24 right-24 z-50 w-16 h-16 bg-white/10 backdrop-blur-xl rounded-full border border-white/20 text-white hover:bg-white/20 transition-colors flex items-center justify-center"
+            className="absolute right-24 z-50 w-16 h-16 bg-red-600/90 backdrop-blur-xl rounded-full border-2 border-white/20 text-white hover:bg-red-700 transition-colors flex items-center justify-center"
+            style={{ top: '146px' }}
           >
             <X size={32} />
           </motion.button>

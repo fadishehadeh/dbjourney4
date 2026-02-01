@@ -142,7 +142,7 @@ const GamePage: React.FC<GamePageProps> = ({ title, titleAr, onClose, onHome, la
           transition={{ delay: 0.9, type: "spring" }}
           className="bg-white p-12 rounded-3xl mb-16 shadow-2xl border-4 border-[#3DAE2B]"
         >
-          <img src="/images/qrcode.svg" alt="QR Code" className="w-[220px] h-[220px] object-contain" />
+          <img src="/images/gamesqr.svg" alt="QR Code" className="w-[220px] h-[220px] object-contain" />
           <p className="text-[#3DAE2B] text-2xl mt-6 font-bold">
             {language === 'EN' ? 'Game QR' : 'رمز QR للعبة'}
           </p>

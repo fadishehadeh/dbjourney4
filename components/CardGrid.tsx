@@ -110,7 +110,10 @@ const CardGrid: React.FC<CardGridProps> = ({ cards, onCardClick, language, type 
           </div>
 
           {/* Title */}
-          <h3 className="relative z-10 text-white text-4xl font-bold text-center">
+          <h3
+            className="relative z-10 text-white text-4xl font-bold text-center"
+            style={language === 'AR' ? { fontSize: '165%' } : undefined}
+          >
             {language === 'EN' ? card.title : card.titleAr}
           </h3>
         </motion.div>

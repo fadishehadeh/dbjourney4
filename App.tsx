@@ -9,6 +9,8 @@ import CardGrid from './components/CardGrid';
 import VideoDetailPage from './components/VideoDetailPage';
 import GamePage from './components/GamePage';
 import InstallButton from './components/InstallButton';
+import VideoPlayer from './components/VideoPlayer';
+import IframePage from './components/IframePage';
 
 const App: React.FC = () => {
   const [state, setState] = useState<ExperienceState>(ExperienceState.CORPORATE_LANDING);
@@ -743,7 +745,6 @@ const App: React.FC = () => {
               onHome={() => setState(ExperienceState.CORPORATE_CARDS)}
               language={language}
               type="retail"
-              isDAwards={true}
             />
           )}
 
@@ -763,6 +764,22 @@ const App: React.FC = () => {
             />
           )}
 
+          {state === ExperienceState.RETAIL_MOBILE_APP && (
+            <VideoDetailPage
+              title={RETAIL_CARDS[4].title}
+              titleAr={RETAIL_CARDS[4].titleAr}
+              contentTitle={RETAIL_CARDS[4].contentTitle!}
+              contentTitleAr={RETAIL_CARDS[4].contentTitleAr!}
+              contentDescription={RETAIL_CARDS[4].contentDescription!}
+              contentDescriptionAr={RETAIL_CARDS[4].contentDescriptionAr!}
+              videoPath={RETAIL_CARDS[4].videoPath!}
+              onClose={() => setState(ExperienceState.RETAIL_CARDS)}
+              onHome={() => setState(ExperienceState.CORPORATE_CARDS)}
+              language={language}
+              type="retail"
+            />
+          )}
+
           {state === ExperienceState.RETAIL_GAME && (
             <GamePage
               title="Retail Gaming Zone"
@@ -774,7 +791,7 @@ const App: React.FC = () => {
           )}
 
           {/* Corporate Detail Pages */}
-          {state === ExperienceState.CORPORATE_VCP && (
+          {state === ExperienceState.CORPORATE_VCP_NEW && (
             <VideoDetailPage
               title={CORPORATE_CARDS[0].title}
               titleAr={CORPORATE_CARDS[0].titleAr}
@@ -790,7 +807,7 @@ const App: React.FC = () => {
             />
           )}
 
-          {state === ExperienceState.CORPORATE_WPS && (
+          {state === ExperienceState.CORPORATE_PAYMENT_GATEWAY_NEW && (
             <VideoDetailPage
               title={CORPORATE_CARDS[1].title}
               titleAr={CORPORATE_CARDS[1].titleAr}
@@ -806,23 +823,18 @@ const App: React.FC = () => {
             />
           )}
 
-          {state === ExperienceState.CORPORATE_PAYMENT_GATEWAY && (
-            <VideoDetailPage
+          {state === ExperienceState.CORPORATE_DIGITAL_ONBOARDING && (
+            <IframePage
+              url="https://www.dukhanbank.com/sb-application"
               title={CORPORATE_CARDS[2].title}
               titleAr={CORPORATE_CARDS[2].titleAr}
-              contentTitle={CORPORATE_CARDS[2].contentTitle!}
-              contentTitleAr={CORPORATE_CARDS[2].contentTitleAr!}
-              contentDescription={CORPORATE_CARDS[2].contentDescription!}
-              contentDescriptionAr={CORPORATE_CARDS[2].contentDescriptionAr!}
-              videoPath={CORPORATE_CARDS[2].videoPath!}
               onClose={() => setState(ExperienceState.CORPORATE_CARDS)}
               onHome={() => setState(ExperienceState.CORPORATE_CARDS)}
               language={language}
-              type="corporate"
             />
           )}
 
-          {state === ExperienceState.CORPORATE_RDC && (
+          {state === ExperienceState.CORPORATE_VCP && (
             <VideoDetailPage
               title={CORPORATE_CARDS[3].title}
               titleAr={CORPORATE_CARDS[3].titleAr}
@@ -838,7 +850,7 @@ const App: React.FC = () => {
             />
           )}
 
-          {state === ExperienceState.CORPORATE_DTAP && (
+          {state === ExperienceState.CORPORATE_SWIFT_SCORE && (
             <VideoDetailPage
               title={CORPORATE_CARDS[4].title}
               titleAr={CORPORATE_CARDS[4].titleAr}
@@ -847,6 +859,86 @@ const App: React.FC = () => {
               contentDescription={CORPORATE_CARDS[4].contentDescription!}
               contentDescriptionAr={CORPORATE_CARDS[4].contentDescriptionAr!}
               videoPath={CORPORATE_CARDS[4].videoPath!}
+              onClose={() => setState(ExperienceState.CORPORATE_CARDS)}
+              onHome={() => setState(ExperienceState.CORPORATE_CARDS)}
+              language={language}
+              type="corporate"
+            />
+          )}
+
+          {state === ExperienceState.CORPORATE_WPS && (
+            <VideoDetailPage
+              title={CORPORATE_CARDS[5].title}
+              titleAr={CORPORATE_CARDS[5].titleAr}
+              contentTitle={CORPORATE_CARDS[5].contentTitle!}
+              contentTitleAr={CORPORATE_CARDS[5].contentTitleAr!}
+              contentDescription={CORPORATE_CARDS[5].contentDescription!}
+              contentDescriptionAr={CORPORATE_CARDS[5].contentDescriptionAr!}
+              videoPath={CORPORATE_CARDS[5].videoPath!}
+              onClose={() => setState(ExperienceState.CORPORATE_CARDS)}
+              onHome={() => setState(ExperienceState.CORPORATE_CARDS)}
+              language={language}
+              type="corporate"
+            />
+          )}
+
+          {state === ExperienceState.CORPORATE_PAYMENT_GATEWAY && (
+            <VideoDetailPage
+              title={CORPORATE_CARDS[6].title}
+              titleAr={CORPORATE_CARDS[6].titleAr}
+              contentTitle={CORPORATE_CARDS[6].contentTitle!}
+              contentTitleAr={CORPORATE_CARDS[6].contentTitleAr!}
+              contentDescription={CORPORATE_CARDS[6].contentDescription!}
+              contentDescriptionAr={CORPORATE_CARDS[6].contentDescriptionAr!}
+              videoPath={CORPORATE_CARDS[6].videoPath!}
+              onClose={() => setState(ExperienceState.CORPORATE_CARDS)}
+              onHome={() => setState(ExperienceState.CORPORATE_CARDS)}
+              language={language}
+              type="corporate"
+            />
+          )}
+
+          {state === ExperienceState.CORPORATE_RDC && (
+            <VideoDetailPage
+              title={CORPORATE_CARDS[7].title}
+              titleAr={CORPORATE_CARDS[7].titleAr}
+              contentTitle={CORPORATE_CARDS[7].contentTitle!}
+              contentTitleAr={CORPORATE_CARDS[7].contentTitleAr!}
+              contentDescription={CORPORATE_CARDS[7].contentDescription!}
+              contentDescriptionAr={CORPORATE_CARDS[7].contentDescriptionAr!}
+              videoPath={CORPORATE_CARDS[7].videoPath!}
+              onClose={() => setState(ExperienceState.CORPORATE_CARDS)}
+              onHome={() => setState(ExperienceState.CORPORATE_CARDS)}
+              language={language}
+              type="corporate"
+            />
+          )}
+
+          {state === ExperienceState.CORPORATE_DTAP && (
+            <VideoDetailPage
+              title={CORPORATE_CARDS[8].title}
+              titleAr={CORPORATE_CARDS[8].titleAr}
+              contentTitle={CORPORATE_CARDS[8].contentTitle!}
+              contentTitleAr={CORPORATE_CARDS[8].contentTitleAr!}
+              contentDescription={CORPORATE_CARDS[8].contentDescription!}
+              contentDescriptionAr={CORPORATE_CARDS[8].contentDescriptionAr!}
+              videoPath={CORPORATE_CARDS[8].videoPath!}
+              onClose={() => setState(ExperienceState.CORPORATE_CARDS)}
+              onHome={() => setState(ExperienceState.CORPORATE_CARDS)}
+              language={language}
+              type="corporate"
+            />
+          )}
+
+          {state === ExperienceState.CORPORATE_CHEQUE_SERVICES && (
+            <VideoDetailPage
+              title={CORPORATE_CARDS[9].title}
+              titleAr={CORPORATE_CARDS[9].titleAr}
+              contentTitle={CORPORATE_CARDS[9].contentTitle!}
+              contentTitleAr={CORPORATE_CARDS[9].contentTitleAr!}
+              contentDescription={CORPORATE_CARDS[9].contentDescription!}
+              contentDescriptionAr={CORPORATE_CARDS[9].contentDescriptionAr!}
+              videoPath={CORPORATE_CARDS[9].videoPath!}
               onClose={() => setState(ExperienceState.CORPORATE_CARDS)}
               onHome={() => setState(ExperienceState.CORPORATE_CARDS)}
               language={language}
