@@ -825,7 +825,7 @@ const App: React.FC = () => {
 
           {state === ExperienceState.CORPORATE_DIGITAL_ONBOARDING && (
             <IframePage
-              url="https://www.dukhanbank.com/sb-application"
+              url="https://dbwebsummit.site/"
               title={CORPORATE_CARDS[2].title}
               titleAr={CORPORATE_CARDS[2].titleAr}
               onClose={() => setState(ExperienceState.CORPORATE_CARDS)}
